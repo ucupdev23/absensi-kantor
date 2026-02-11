@@ -91,6 +91,8 @@ $nama_bulan = [
                         <th>Izin</th>
                         <th>Cuti</th>
                         <th>Sakit</th>
+                        <th>Mode</th>
+<th>Penugasan</th>
                         <th>Total Jam</th>
                     </tr>
                 </thead>
@@ -108,6 +110,29 @@ $nama_bulan = [
                         <td><?= $r['izin']; ?></td>
                         <td><?= $r['cuti']; ?></td>
                         <td><?= $r['sakit']; ?></td>
+                        <td>
+  <?php if (($r->mode_absen ?? 'kantor') === 'lapangan'): ?>
+    <span class="badge bg-warning text-dark">Lapangan</span>
+  <?php else: ?>
+    <span class="badge bg-success">Kantor</span>
+  <?php endif; ?>
+</td>
+
+<td>
+  <?php if (!empty($r->assignment_id)): ?>
+    <a href="<?= base_url('penugasan_lapangan/detail/'.$r->assignment_id); ?>" class="text-decoration-none">
+      #<?= (int)$r->assignment_id; ?> — <?= htmlspecialchars($r->tugas_lokasi_nama ?? 'Detail'); ?>
+    </a>
+    <div class="small text-muted">
+      <?= !empty($r->tugas_start_time) ? substr($r->tugas_start_time,0,5) : '--:--'; ?>
+      -
+      <?= !empty($r->tugas_end_time) ? substr($r->tugas_end_time,0,5) : '--:--'; ?>
+    </div>
+  <?php else: ?>
+    <span class="text-muted">-</span>
+  <?php endif; ?>
+</td>
+
                         <td><?= number_format($r['total_jam'], 2, ',', '.'); ?></td>
                     </tr>
                 <?php endforeach; ?>

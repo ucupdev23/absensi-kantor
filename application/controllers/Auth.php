@@ -10,6 +10,17 @@ class Auth extends CI_Controller {
         date_default_timezone_set('Asia/Jakarta'); // sesuaikan kalau perlu
     }
 
+    private function normalize_wa($no_wa)
+    {
+        $p = preg_replace('/[^0-9]/', '', $no_wa);
+
+        // ubah 08xx -> 628xx
+        if (substr($p, 0, 1) === '0') {
+            $p = '62' . substr($p, 1);
+        }
+        return $p;
+    }
+
     public function login()
     {
         // kalau sudah login, langsung lempar ke dashboard
@@ -65,15 +76,31 @@ class Auth extends CI_Controller {
 
 public function forgot_password_process()
 {
-    $this->load->model('User_model');
+    date_default_timezone_set('Asia/Jakarta');
     $this->load->model('Otp_model');
     $this->load->library('Fonnte_lib');
 
-    $username = $this->input->post('username', TRUE);
+    $identifier = trim($this->input->post('identifier', TRUE));
+    if ($identifier === '') {
+        $this->session->set_flashdata('error', 'Silakan isi username atau nomor WhatsApp.');
+        return redirect('auth/forgot_password');
+    }
 
-    $user = $this->db->get_where('users', ['username' => $username])->row();
+    // cari user by username ATAU no_wa
+    $user = $this->db->get_where('users', ['username' => $identifier])->row();
+
     if (!$user) {
-        $this->session->set_flashdata('error', 'Username tidak ditemukan.');
+        $wa = $this->normalize_wa($identifier);
+        $user = $this->db->get_where('users', ['no_wa' => $wa])->row();
+    }
+
+    if (!$user) {
+        $this->session->set_flashdata('error', 'Akun tidak ditemukan. Cek username atau nomor WhatsApp.');
+        return redirect('auth/forgot_password');
+    }
+
+    if ($user->status !== 'aktif') {
+        $this->session->set_flashdata('error', 'Akun tidak aktif. Hubungi admin.');
         return redirect('auth/forgot_password');
     }
 
@@ -82,76 +109,175 @@ public function forgot_password_process()
         return redirect('auth/forgot_password');
     }
 
+    $no_wa = $this->normalize_wa($user->no_wa);
+
+    // THROTTLE: jika OTP terakhir masih aktif (belum expired), jangan kirim lagi
+    $latest = $this->Otp_model->get_latest_active($user->id);
+    if ($latest && time() < strtotime($latest->expired_at)) {
+        // simpan ke session supaya halaman OTP tidak hilang saat refresh
+        $this->session->set_userdata([
+            'fp_user_id' => $user->id,
+            'fp_username' => $user->username,
+            'fp_no_wa' => $no_wa,
+            'fp_expired_at' => $latest->expired_at,
+        ]);
+        $this->session->set_flashdata('success', 'OTP sudah dikirim. Silakan cek WhatsApp Anda.');
+        return redirect('auth/forgot_password/otp');
+    }
+
     // generate OTP 6 digit
-    $kode_otp = mt_rand(100000, 999999);
-    $expired  = date('Y-m-d H:i:s', time() + 10 * 60); // 10 menit
+    $kode_otp = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+
+    // OTP berlaku 1 menit
+    $expired  = date('Y-m-d H:i:s', time() + 60);
 
     $this->Otp_model->create_otp($user->id, $kode_otp, $expired);
 
-    // kirim ke Fonnte
-    $this->fonnte_lib->kirim_otp($user->no_wa, $kode_otp);
+    // kirim WA
+    $sent = $this->fonnte_lib->kirim_otp($no_wa, $kode_otp);
+    if (!$sent) {
+        $this->session->set_flashdata('error', 'Gagal mengirim OTP. Coba lagi.');
+        return redirect('auth/forgot_password');
+    }
 
-    // simpan username di flash untuk langkah berikutnya
+    // simpan ke session (anti hilang saat refresh)
+    $this->session->set_userdata([
+        'fp_user_id' => $user->id,
+        'fp_username' => $user->username,
+        'fp_no_wa' => $no_wa,
+        'fp_expired_at' => $expired,
+    ]);
+
     $this->session->set_flashdata('success', 'Kode OTP telah dikirim ke WhatsApp Anda.');
-    $this->session->set_flashdata('username_fp', $username);
-
-    redirect('auth/reset_password');
+    redirect('auth/forgot_password/otp');
 }
 
-public function reset_password()
+public function forgot_password_otp()
 {
-    $data['title'] = 'Reset Password';
+    if (!$this->session->userdata('fp_user_id')) {
+        return redirect('auth/forgot_password');
+    }
 
-    // ambil username dari flashdata kalau ada
-    $data['username'] = $this->session->flashdata('username_fp') ?: '';
+    $data['title'] = 'Verifikasi OTP';
+    $data['username'] = $this->session->userdata('fp_username');
+    $data['no_wa'] = $this->session->userdata('fp_no_wa');
+    $data['expired_at'] = $this->session->userdata('fp_expired_at');
 
     $this->load->view('templates/header', $data);
-    $this->load->view('auth/reset_password', $data);
+    $this->load->view('auth/forgot_password_otp', $data);
     $this->load->view('templates/footer');
 }
 
-public function reset_password_process()
+public function forgot_password_verify()
 {
-    $this->load->model('User_model');
     $this->load->model('Otp_model');
 
-    $username   = $this->input->post('username', TRUE);
-    $kode_otp   = $this->input->post('kode_otp', TRUE);
+    $user_id = $this->session->userdata('fp_user_id');
+    if (!$user_id) return redirect('auth/forgot_password');
+
+    $kode_otp = trim($this->input->post('kode_otp', TRUE));
+    if ($kode_otp === '') {
+        $this->session->set_flashdata('error', 'Silakan isi OTP.');
+        return redirect('auth/forgot_password/otp');
+    }
+
+    $otp = $this->Otp_model->get_valid_otp($user_id, $kode_otp);
+    if (!$otp) {
+        $this->session->set_flashdata('error', 'Kode OTP tidak valid atau sudah kadaluarsa.');
+        return redirect('auth/forgot_password/otp');
+    }
+
+    // tandai OTP dipakai
+    $this->Otp_model->mark_used($otp->id);
+
+    // set flag verified
+    $this->session->set_userdata('fp_verified', 1);
+
+    redirect('auth/forgot_password/new_password');
+}
+
+public function forgot_password_resend()
+{
+    $this->load->model('Otp_model');
+    $this->load->library('Fonnte_lib');
+
+    $user_id = $this->session->userdata('fp_user_id');
+    if (!$user_id) return redirect('auth/forgot_password');
+
+    $latest = $this->Otp_model->get_latest_active($user_id);
+
+    // kalau belum expired, jangan resend
+    if ($latest && time() < strtotime($latest->expired_at)) {
+        $this->session->set_flashdata('error', 'Tunggu hingga timer habis untuk kirim ulang OTP.');
+        return redirect('auth/forgot_password/otp');
+    }
+
+    // ambil dari session
+    $username = $this->session->userdata('fp_username');
+    $no_wa = $this->session->userdata('fp_no_wa');
+
+    $kode_otp = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+    $expired  = date('Y-m-d H:i:s', time() + 60);
+
+    $this->Otp_model->create_otp($user_id, $kode_otp, $expired);
+
+    $sent = $this->fonnte_lib->kirim_otp($no_wa, $kode_otp);
+    if (!$sent) {
+        $this->session->set_flashdata('error', 'Gagal mengirim OTP. Coba lagi.');
+        return redirect('auth/forgot_password/otp');
+    }
+
+    $this->session->set_userdata('fp_expired_at', $expired);
+
+    $this->session->set_flashdata('success', 'OTP baru telah dikirim.');
+    redirect('auth/forgot_password/otp');
+}
+
+public function forgot_password_new_password()
+{
+    if (!$this->session->userdata('fp_verified')) {
+        return redirect('auth/forgot_password');
+    }
+
+    $data['title'] = 'Buat Password Baru';
+
+    $this->load->view('templates/header', $data);
+    $this->load->view('auth/new_password', $data);
+    $this->load->view('templates/footer');
+}
+
+public function forgot_password_new_password_process()
+{
+    if (!$this->session->userdata('fp_verified')) {
+        return redirect('auth/forgot_password');
+    }
+
+    $user_id   = $this->session->userdata('fp_user_id');
     $password   = $this->input->post('password_baru', TRUE);
     $konfirmasi = $this->input->post('password_konfirmasi', TRUE);
 
     if ($password !== $konfirmasi) {
         $this->session->set_flashdata('error', 'Konfirmasi password tidak sama.');
-        return redirect('auth/reset_password');
+        return redirect('auth/forgot_password/new_password');
     }
 
     if (strlen($password) < 6) {
         $this->session->set_flashdata('error', 'Password minimal 6 karakter.');
-        return redirect('auth/reset_password');
+        return redirect('auth/forgot_password/new_password');
     }
 
-    $user = $this->db->get_where('users', ['username' => $username])->row();
-    if (!$user) {
-        $this->session->set_flashdata('error', 'Username tidak ditemukan.');
-        return redirect('auth/reset_password');
-    }
-
-    $otp = $this->Otp_model->get_valid_otp($user->id, $kode_otp);
-    if (!$otp) {
-        $this->session->set_flashdata('error', 'Kode OTP tidak valid atau sudah kadaluarsa.');
-        return redirect('auth/reset_password');
-    }
-
-    // update password
     $hash = password_hash($password, PASSWORD_DEFAULT);
-    $this->User_model->update_password($user->id, $hash);
+    $this->User_model->update_password($user_id, $hash);
 
-    // tandai OTP dipakai
-    $this->Otp_model->mark_used($otp->id);
+    // bersihkan session lupa password
+    $this->session->unset_userdata([
+        'fp_user_id','fp_username','fp_no_wa','fp_expired_at','fp_verified'
+    ]);
 
-    $this->session->set_flashdata('success', 'Password berhasil direset. Silakan login dengan password baru.');
+    $this->session->set_flashdata('success', 'Password berhasil direset. Silakan login.');
     redirect('auth/login');
 }
+
 
 
     public function logout()

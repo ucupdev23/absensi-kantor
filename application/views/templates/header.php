@@ -108,6 +108,7 @@
                     <li><a class="dropdown-item" href="<?= base_url('lokasi'); ?>">Lokasi Kantor</a></li>
                     <li><a class="dropdown-item" href="<?= base_url('shift'); ?>">Shift</a></li>
                     <li><a class="dropdown-item" href="<?= base_url('pegawai'); ?>">Pegawai</a></li>
+                    <li><a class="dropdown-item" href="<?= base_url('penugasan_lapangan'); ?>">Penugasan Lapangan</a></li>
                 </ul>
             </li>
             <li class="nav-item">

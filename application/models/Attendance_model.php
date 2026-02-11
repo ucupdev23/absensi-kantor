@@ -50,6 +50,36 @@ class Attendance_model extends CI_Model {
     }
 }
 
+// public function get_report($start_date, $end_date, $employee_id = null, $lokasi_id = null)
+// {
+//     $this->db->select('
+//         a.*,
+//         e.kode_pegawai,
+//         u.nama_lengkap,
+//         j.nama AS nama_jabatan,
+//         l.nama AS nama_lokasi
+//     ');
+//     $this->db->from($this->table.' a');
+//     $this->db->join('employees e', 'e.id = a.employee_id');
+//     $this->db->join('users u', 'u.id = e.user_id');
+//     $this->db->join('job_positions j', 'j.id = e.jabatan_id');
+//     $this->db->join('locations l', 'l.id = e.lokasi_id');
+//     $this->db->where('a.tanggal >=', $start_date);
+//     $this->db->where('a.tanggal <=', $end_date);
+
+//     if (!empty($employee_id)) {
+//         $this->db->where('a.employee_id', $employee_id);
+//     }
+//     if (!empty($lokasi_id)) {
+//         $this->db->where('e.lokasi_id', $lokasi_id);
+//     }
+
+//     $this->db->order_by('u.nama_lengkap', 'ASC');
+//     $this->db->order_by('a.tanggal', 'ASC');
+
+//     return $this->db->get()->result();
+// }
+
 public function get_report($start_date, $end_date, $employee_id = null, $lokasi_id = null)
 {
     $this->db->select('
@@ -57,13 +87,22 @@ public function get_report($start_date, $end_date, $employee_id = null, $lokasi_
         e.kode_pegawai,
         u.nama_lengkap,
         j.nama AS nama_jabatan,
-        l.nama AS nama_lokasi
+        l.nama AS nama_lokasi,
+
+        fa.lokasi_nama AS tugas_lokasi_nama,
+        fa.tanggal AS tugas_tanggal,
+        fa.start_time AS tugas_start_time,
+        fa.end_time AS tugas_end_time
     ');
     $this->db->from($this->table.' a');
     $this->db->join('employees e', 'e.id = a.employee_id');
     $this->db->join('users u', 'u.id = e.user_id');
     $this->db->join('job_positions j', 'j.id = e.jabatan_id');
     $this->db->join('locations l', 'l.id = e.lokasi_id');
+
+    // join penugasan (left join karena tidak semua punya)
+    $this->db->join('field_assignments fa', 'fa.id = a.assignment_id', 'left');
+
     $this->db->where('a.tanggal >=', $start_date);
     $this->db->where('a.tanggal <=', $end_date);
 
@@ -79,6 +118,7 @@ public function get_report($start_date, $end_date, $employee_id = null, $lokasi_
 
     return $this->db->get()->result();
 }
+
 
 public function get_history($employee_id, $limit = 5)
 {

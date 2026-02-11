@@ -5,8 +5,7 @@
                 <div class="text-center mb-3">
                 <h5 class="mb-1" style="color:#670F7A;">Reset Password</h5>
                     <p class="text-muted small mb-0">
-                        Masukkan <strong>username</strong>, <strong>kode OTP</strong> yang
-                        dikirim ke WhatsApp dan password baru Anda.
+                        Masukkan <strong>Password Baru</strong> Anda dua kali untuk konfirmasi. Setelah disimpan, Anda dapat menggunakan password baru ini untuk login.
                     </p>
                 </div>
 
@@ -21,16 +20,7 @@
                     </div>
                 <?php endif; ?>
 
-                <form action="<?= base_url('auth/reset_password/process'); ?>" method="post">
-                    <div class="mb-3">
-                        <label class="form-label">Username</label>
-                        <input type="text" name="username" class="form-control"
-                               value="<?= isset($username) ? htmlspecialchars($username) : ''; ?>" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Kode OTP</label>
-                        <input type="text" name="kode_otp" class="form-control" required>
-                    </div>
+                <form action="<?= base_url('auth/forgot_password/new_password_process'); ?>" method="post">
                     <div class="mb-3">
                         <label class="form-label">Password Baru</label>
                         <div class="input-group">

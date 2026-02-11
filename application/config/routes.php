@@ -78,8 +78,24 @@ $route['profil/password/update'] = 'profil/password_update';
 
 $route['auth/forgot_password']        = 'auth/forgot_password';
 $route['auth/forgot_password/process'] = 'auth/forgot_password_process';
-$route['auth/reset_password']          = 'auth/reset_password';
-$route['auth/reset_password/process']  = 'auth/reset_password_process';
+// $route['auth/reset_password']          = 'auth/reset_password';
+// $route['auth/reset_password/process']  = 'auth/reset_password_process';
+
+$route['auth/forgot_password/otp'] = 'auth/forgot_password_otp';
+$route['auth/forgot_password/verify'] = 'auth/forgot_password_verify';
+$route['auth/forgot_password/resend'] = 'auth/forgot_password_resend';
+$route['auth/forgot_password/new_password'] = 'auth/forgot_password_new_password';
+$route['auth/forgot_password/new_password_process'] = 'auth/forgot_password_new_password_process';
+
+$route['penugasan_lapangan'] = 'penugasan_lapangan/index';
+$route['penugasan_lapangan/create'] = 'penugasan_lapangan/create';
+$route['penugasan_lapangan/store'] = 'penugasan_lapangan/store';
+$route['penugasan_lapangan/detail/(:num)'] = 'penugasan_lapangan/detail/$1';
+$route['penugasan_lapangan/edit/(:num)'] = 'penugasan_lapangan/edit/$1';
+$route['penugasan_lapangan/update/(:num)'] = 'penugasan_lapangan/update/$1';
+$route['penugasan_lapangan/delete/(:num)'] = 'penugasan_lapangan/delete/$1';
+
+$route['penugasan_lapangan/history'] = 'penugasan_lapangan/history';
 
 $route['forbidden'] = 'errors/forbidden';
 $route['errors/forbidden'] = 'errors/forbidden';

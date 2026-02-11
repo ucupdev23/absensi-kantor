@@ -5,7 +5,7 @@
                  <div class="text-center mb-3">
                     <h5 class="mb-1" style="color:#670F7A;">Lupa Password</h5>
                     <p class="text-muted small mb-0">
-                        Masukkan <strong>username</strong> Anda. Sistem akan mengirimkan
+                        Masukkan <strong>Username</strong> atau <strong>nomor WhatsApp</strong> Anda. Sistem akan mengirimkan
                         kode OTP ke WhatsApp yang terdaftar.
                     </p>
                 </div>
@@ -23,8 +23,8 @@
 
                 <form action="<?= base_url('auth/forgot_password/process'); ?>" method="post">
                     <div class="mb-3">
-                        <label class="form-label">Username</label>
-                        <input type="text" name="username" class="form-control" required>
+                        <label class="form-label">Username / No WhatsApp</label>
+                        <input type="text" name="identifier" class="form-control" placeholder="Isi disini" required>
                     </div>
                     <button type="submit" class="btn btn-primary-custom w-100 mb-2">
                         Kirim OTP ke WhatsApp
