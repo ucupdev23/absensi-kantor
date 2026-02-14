@@ -129,9 +129,17 @@ public function forgot_password_process()
     $kode_otp = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
     // OTP berlaku 1 menit
-    $expired  = date('Y-m-d H:i:s', time() + 60);
+    // $expired  = date('Y-m-d H:i:s', time() + 60);
 
-    $this->Otp_model->create_otp($user->id, $kode_otp, $expired);
+    // $this->Otp_model->create_otp($user->id, $kode_otp, $expired);
+
+    $result = $this->Otp_model->create_otp($user->id, $kode_otp);
+
+$this->session->set_userdata([
+    'fp_expired_at' => $result['expired_at'],
+    'fp_resend_at'  => $result['resend_at']
+]);
+
 
     // kirim WA
     $sent = $this->fonnte_lib->kirim_otp($no_wa, $kode_otp);
@@ -207,10 +215,16 @@ public function forgot_password_resend()
     $latest = $this->Otp_model->get_latest_active($user_id);
 
     // kalau belum expired, jangan resend
-    if ($latest && time() < strtotime($latest->expired_at)) {
-        $this->session->set_flashdata('error', 'Tunggu hingga timer habis untuk kirim ulang OTP.');
-        return redirect('auth/forgot_password/otp');
-    }
+    // if ($latest && time() < strtotime($latest->expired_at)) {
+    //     $this->session->set_flashdata('error', 'Tunggu hingga timer habis untuk kirim ulang OTP.');
+    //     return redirect('auth/forgot_password/otp');
+    // }
+
+    if (!$this->Otp_model->can_resend($user_id)) {
+    $this->session->set_flashdata('error', 'Tunggu 1 menit sebelum kirim ulang OTP.');
+    return redirect('auth/forgot_password/otp');
+}
+
 
     // ambil dari session
     $username = $this->session->userdata('fp_username');

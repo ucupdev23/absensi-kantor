@@ -29,40 +29,48 @@
         <button class="btn w-100 text-white" style="background:#670F7A;">Verifikasi</button>
       </form>
 
-      <!-- <div class="d-flex justify-content-between align-items-center mt-3">
-        <small class="text-muted">Kirim ulang dalam <b><span id="timer">60</span></b> detik</small>
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <small class="text-muted">
+          Kirim ulang dalam <b><span id="timer">60</span></b> detik
+        </small>
 
         <form method="post" action="<?= base_url('auth/forgot_password/resend'); ?>">
-          <button id="btnResend" class="btn btn-outline-secondary btn-sm" disabled>Kirim Ulang</button>
+          <button id="btnResend" class="btn btn-outline-secondary btn-sm" disabled>
+            Kirim Ulang
+          </button>
         </form>
-      </div> -->
+      </div>
 
       <div class="text-center mt-3">
-        <a href="<?= base_url('auth/login'); ?>" class="btn btn-sm btn-outline-primary">Kembali ke Login</a>
+        <a href="<?= base_url('auth/login'); ?>" class="btn btn-sm btn-outline-primary">
+          Kembali ke Login
+        </a>
       </div>
     </div>
   </div>
 </div>
 
-<!-- <script>
+<script>
 (function(){
-  const expiredAt = new Date("<?= date('c', strtotime($expired_at)); ?>").getTime();
-  const timerEl = document.getElementById('timer');
-  const btn = document.getElementById('btnResend');
+  const resendAt  = new Date("<?= date('c', strtotime($this->session->userdata('fp_resend_at'))); ?>").getTime();
+  const timerEl  = document.getElementById('timer');
+  const btn      = document.getElementById('btnResend');
 
   function tick(){
     const now = Date.now();
-    let s = Math.ceil((expiredAt - now) / 1000);
+    let s = Math.ceil((resendAt - now) / 1000);
 
     if (s <= 0) {
       timerEl.textContent = '0';
       btn.disabled = false;
       return;
     }
+
     timerEl.textContent = s;
     btn.disabled = true;
     setTimeout(tick, 500);
   }
+
   tick();
 })();
-</script> -->
+</script>
