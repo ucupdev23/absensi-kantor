@@ -63,3 +63,72 @@
         </div>
     </div>
 </div>
+
+<div class="row mt-4">
+    <!-- TOP RAJIN -->
+    <div class="col-md-6 mb-3">
+        <div class="card card-main">
+            <div class="card-body">
+                <h6 style="color:#670F7A;">🏆 Paling Rajin Bulan Ini</h6>
+                <table class="table table-sm mt-3">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nama</th>
+                            <th>Total Hadir</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (!empty($top_rajin)) : $no = 1; ?>
+                            <?php foreach ($top_rajin as $row) : ?>
+                                <tr>
+                                    <td><?= $no++; ?></td>
+                                    <td><?= $row->nama_lengkap; ?></td>
+                                    <td><?= $row->total_hadir; ?> hari</td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else : ?>
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">Belum ada data</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOP TELAT -->
+    <div class="col-md-6 mb-3">
+        <div class="card card-main">
+            <div class="card-body">
+                <h6 style="color:#670F7A;">⏰ Paling Sering Telat</h6>
+                <table class="table table-sm mt-3">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nama</th>
+                            <th>Total Telat</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (!empty($top_telat)) : $no = 1; ?>
+                            <?php foreach ($top_telat as $row) : ?>
+                                <tr>
+                                    <td><?= $no++; ?></td>
+                                    <td><?= $row->nama_lengkap; ?></td>
+                                    <td><?= $row->total_telat; ?>x</td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else : ?>
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">Belum ada data</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

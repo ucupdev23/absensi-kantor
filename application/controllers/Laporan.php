@@ -29,43 +29,96 @@ class Laporan extends CI_Controller {
 
         // rekap per pegawai (hitung di PHP)
         $rekap = [];
+        // foreach ($report as $row) {
+        //     $key = $row->employee_id;
+        //     if (!isset($rekap[$key])) {
+        //         $rekap[$key] = [
+        //             'employee_id'   => $row->employee_id,
+        //             'nama'          => $row->nama_lengkap,
+        //             'kode_pegawai'  => $row->kode_pegawai,
+        //             'nama_lokasi'   => $row->nama_lokasi,
+        //             'hadir'         => 0,
+        //             'telat'         => 0,
+        //             'izin'          => 0,
+        //             'cuti'          => 0,
+        //             'sakit'         => 0,
+        //             'total_jam'     => 0,
+        //             'jumlah_hari'   => 0,
+        //         ];
+        //     }
+
+        //     // status_harian
+        //     $status_harian = $row->status_harian ?: 'Hadir'; // fallback
+
+        //     if ($status_harian == 'Hadir')      $rekap[$key]['hadir']++;
+        //     elseif ($status_harian == 'Izin')  $rekap[$key]['izin']++;
+        //     elseif ($status_harian == 'Cuti')  $rekap[$key]['cuti']++;
+        //     elseif ($status_harian == 'Sakit') $rekap[$key]['sakit']++;
+
+        //     // telat
+        //     if ($row->status_masuk == 'Telat') {
+        //         $rekap[$key]['telat']++;
+        //     }
+
+        //     if (!empty($row->total_jam_kerja)) {
+        //         $rekap[$key]['total_jam'] += (float)$row->total_jam_kerja;
+        //     }
+
+        //     $rekap[$key]['jumlah_hari']++;
+        // }
+
         foreach ($report as $row) {
-            $key = $row->employee_id;
-            if (!isset($rekap[$key])) {
-                $rekap[$key] = [
-                    'employee_id'   => $row->employee_id,
-                    'nama'          => $row->nama_lengkap,
-                    'kode_pegawai'  => $row->kode_pegawai,
-                    'nama_lokasi'   => $row->nama_lokasi,
-                    'hadir'         => 0,
-                    'telat'         => 0,
-                    'izin'          => 0,
-                    'cuti'          => 0,
-                    'sakit'         => 0,
-                    'total_jam'     => 0,
-                    'jumlah_hari'   => 0,
-                ];
-            }
+    $key = $row->employee_id;
 
-            // status_harian
-            $status_harian = $row->status_harian ?: 'Hadir'; // fallback
+    if (!isset($rekap[$key])) {
+        $rekap[$key] = [
+            'employee_id'       => $row->employee_id,
+            'nama'              => $row->nama_lengkap,
+            'kode_pegawai'      => $row->kode_pegawai,
+            'nama_lokasi'       => $row->nama_lokasi,
+            'hadir'             => 0,
+            'telat'             => 0,
+            'izin'              => 0,
+            'cuti'              => 0,
+            'sakit'             => 0,
+            'total_jam'         => 0,
+            'jumlah_hari'       => 0,
+            'total_menit_telat' => 0,
+            'hari_masuk'        => 0,
+        ];
+    }
 
-            if ($status_harian == 'Hadir')      $rekap[$key]['hadir']++;
-            elseif ($status_harian == 'Izin')  $rekap[$key]['izin']++;
-            elseif ($status_harian == 'Cuti')  $rekap[$key]['cuti']++;
-            elseif ($status_harian == 'Sakit') $rekap[$key]['sakit']++;
+    $status_harian = $row->status_harian ?: 'Hadir';
 
-            // telat
-            if ($row->status_masuk == 'Telat') {
-                $rekap[$key]['telat']++;
-            }
+    if ($status_harian == 'Hadir') {
+        $rekap[$key]['hadir']++;
+        $rekap[$key]['hari_masuk']++;
+    }
+    elseif ($status_harian == 'Izin')  $rekap[$key]['izin']++;
+    elseif ($status_harian == 'Cuti')  $rekap[$key]['cuti']++;
+    elseif ($status_harian == 'Sakit') $rekap[$key]['sakit']++;
 
-            if (!empty($row->total_jam_kerja)) {
-                $rekap[$key]['total_jam'] += (float)$row->total_jam_kerja;
-            }
+    // HITUNG TELAT MENIT
+    $menit_telat = 0;
+    if ($row->jam_masuk && $row->shift_jam_masuk) {
+        $jam_shift = strtotime($row->tanggal.' '.$row->shift_jam_masuk);
+        $jam_masuk = strtotime($row->jam_masuk);
+        $batas_telat = $jam_shift + ($row->toleransi_telat_menit * 60);
 
-            $rekap[$key]['jumlah_hari']++;
+        if ($jam_masuk > $batas_telat) {
+            $menit_telat = floor(($jam_masuk - $batas_telat) / 60);
         }
+    }
+
+    $rekap[$key]['total_menit_telat'] += $menit_telat;
+
+    if (!empty($row->total_jam_kerja)) {
+        $rekap[$key]['total_jam'] += (float)$row->total_jam_kerja;
+    }
+
+    $rekap[$key]['jumlah_hari']++;
+}
+
 
         $data['title']      = 'Laporan Absensi Bulanan';
         $data['bulan']      = $bulan;

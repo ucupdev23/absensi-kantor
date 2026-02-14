@@ -212,40 +212,37 @@ public function forgot_password_resend()
     $user_id = $this->session->userdata('fp_user_id');
     if (!$user_id) return redirect('auth/forgot_password');
 
-    $latest = $this->Otp_model->get_latest_active($user_id);
-
-    // kalau belum expired, jangan resend
-    // if ($latest && time() < strtotime($latest->expired_at)) {
-    //     $this->session->set_flashdata('error', 'Tunggu hingga timer habis untuk kirim ulang OTP.');
-    //     return redirect('auth/forgot_password/otp');
-    // }
-
+    // cek boleh resend atau belum (1 menit)
     if (!$this->Otp_model->can_resend($user_id)) {
-    $this->session->set_flashdata('error', 'Tunggu 1 menit sebelum kirim ulang OTP.');
-    return redirect('auth/forgot_password/otp');
-}
+        $this->session->set_flashdata('error', 'Tunggu 1 menit sebelum kirim ulang OTP.');
+        return redirect('auth/forgot_password/otp');
+    }
 
-
-    // ambil dari session
     $username = $this->session->userdata('fp_username');
-    $no_wa = $this->session->userdata('fp_no_wa');
+    $no_wa    = $this->session->userdata('fp_no_wa');
 
     $kode_otp = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-    $expired  = date('Y-m-d H:i:s', time() + 60);
 
-    $this->Otp_model->create_otp($user_id, $kode_otp, $expired);
+    // CREATE OTP BARU
+    $result = $this->Otp_model->create_otp($user_id, $kode_otp);
 
+    // kirim WA
     $sent = $this->fonnte_lib->kirim_otp($no_wa, $kode_otp);
     if (!$sent) {
         $this->session->set_flashdata('error', 'Gagal mengirim OTP. Coba lagi.');
         return redirect('auth/forgot_password/otp');
     }
 
-    $this->session->set_userdata('fp_expired_at', $expired);
+    // 🔥 INI YANG PENTING (RESET TIMER)
+    $this->session->set_userdata([
+        'fp_expired_at' => $result['expired_at'],
+        'fp_resend_at'  => $result['resend_at']
+    ]);
 
     $this->session->set_flashdata('success', 'OTP baru telah dikirim.');
     redirect('auth/forgot_password/otp');
 }
+
 
 public function forgot_password_new_password()
 {

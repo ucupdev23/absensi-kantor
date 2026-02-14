@@ -91,6 +91,8 @@ $nama_bulan = [
                         <th>Izin</th>
                         <th>Cuti</th>
                         <th>Sakit</th>
+                        <th>Hari Masuk</th>
+<th>Total Telat (menit)</th>
                         <th>Mode</th>
 <th>Penugasan</th>
                         <th>Total Jam</th>
@@ -110,6 +112,16 @@ $nama_bulan = [
                         <td><?= $r['izin']; ?></td>
                         <td><?= $r['cuti']; ?></td>
                         <td><?= $r['sakit']; ?></td>
+                        <td><?= $r['hari_masuk']; ?></td>
+<td>
+    <?php if ($r['total_menit_telat'] > 0): ?>
+        <span class="text-danger fw-bold">
+            <?= $r['total_menit_telat']; ?> menit
+        </span>
+    <?php else: ?>
+        <span class="text-success">0</span>
+    <?php endif; ?>
+</td>
                         <td>
   <?php if (($r->mode_absen ?? 'kantor') === 'lapangan'): ?>
     <span class="badge bg-warning text-dark">Lapangan</span>

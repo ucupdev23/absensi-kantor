@@ -45,6 +45,10 @@ class Dashboard extends CI_Controller {
             }
         }
 
+        // DATA BARU (DASHBOARD ANALYTICS)
+    $top_rajin = $this->Attendance_model->get_top_rajin_bulan_ini();
+    $top_telat = $this->Attendance_model->get_top_telat_bulan_ini();
+
         $data = [
             'title'        => 'Dashboard Admin',
             'today'        => $today,
@@ -53,7 +57,9 @@ class Dashboard extends CI_Controller {
             'izin'         => $izin,
             'cuti'         => $cuti,
             'sakit'        => $sakit,
-            'belum_absen'  => $belum_absen
+            'belum_absen'  => $belum_absen,
+            'top_rajin'    => $top_rajin,
+            'top_telat'    => $top_telat
         ];
 
         $this->load->view('templates/header',$data);

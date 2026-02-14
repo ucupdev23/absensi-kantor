@@ -13,4 +13,5 @@ yang perlu dibenahi:
 11. kenapa pas diklik absen ngebuka kameranya lama? [done]
 12. tampilkan mode_absen di laporan
 13. kalau berangkat absen masuk dikantor, terus pulang dilapangan gmn?
+14. nomor pegawai harus dari 628
 

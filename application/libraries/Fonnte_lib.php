@@ -16,7 +16,7 @@ class Fonnte_lib {
 
         $message = "Kode OTP reset password Anda: *{$kode_otp}*\n\n"
                  . "Jangan berikan kode ini kepada siapa pun.\n"
-                 . "Kode berlaku 10 menit.";
+                 . "Kode berlaku 5 menit.";
 
         $data = [
             'target'  => $target,
