@@ -153,7 +153,7 @@ $this->session->set_userdata([
         'fp_user_id' => $user->id,
         'fp_username' => $user->username,
         'fp_no_wa' => $no_wa,
-        'fp_expired_at' => $expired,
+        'fp_expired_at' => $result['expired_at'],
     ]);
 
     $this->session->set_flashdata('success', 'Kode OTP telah dikirim ke WhatsApp Anda.');
