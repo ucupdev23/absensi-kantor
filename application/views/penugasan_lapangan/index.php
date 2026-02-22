@@ -10,27 +10,30 @@
 
 <?php if ($this->session->flashdata('error')): ?>
   <div class="alert alert-danger"><?= $this->session->flashdata('error'); ?></div>
-<?php endif; ?>
+<?php
+endif; ?>
 <?php if ($this->session->flashdata('success')): ?>
   <div class="alert alert-success"><?= $this->session->flashdata('success'); ?></div>
-<?php endif; ?>
+<?php
+endif; ?>
 
 <div class="card card-main mb-3">
   <div class="card-body">
     <form class="row g-2" method="get" action="<?= base_url('penugasan_lapangan'); ?>">
       <div class="col-12 col-md-4">
         <label class="form-label">Tanggal</label>
-        <input type="date" name="tanggal" class="form-control" value="<?= htmlspecialchars($q['tanggal'] ?? ''); ?>">
+        <input type="date" name="tanggal" class="form-control" value="<?= htmlspecialchars(isset($q['tanggal']) ? $q['tanggal'] : ''); ?>">
       </div>
       <div class="col-12 col-md-4">
         <label class="form-label">Status</label>
         <select name="status" class="form-select">
           <option value="">Semua</option>
-          <?php foreach (['draft','aktif','selesai','batal'] as $st): ?>
-            <option value="<?= $st; ?>" <?= (($q['status'] ?? '') === $st) ? 'selected' : ''; ?>>
+          <?php foreach (['draft', 'aktif', 'selesai', 'batal'] as $st): ?>
+            <option value="<?= $st; ?>" <?=((isset($q['status']) ? $q['status'] : '') === $st) ? 'selected' : ''; ?>>
               <?= ucfirst($st); ?>
             </option>
-          <?php endforeach; ?>
+          <?php
+endforeach; ?>
         </select>
       </div>
       <div class="col-12 col-md-4 d-flex align-items-end gap-2">
@@ -56,34 +59,36 @@
       <tbody>
       <?php if (empty($rows)): ?>
         <tr><td colspan="5" class="text-center text-muted py-4">Belum ada penugasan.</td></tr>
-      <?php endif; ?>
+      <?php
+endif; ?>
 
-      <?php foreach($rows as $r): ?>
+      <?php foreach ($rows as $r): ?>
         <tr>
           <td><?= date('d M Y', strtotime($r->tanggal)); ?></td>
           <td>
             <div class="fw-semibold"><?= htmlspecialchars($r->lokasi_nama); ?></div>
-            <div class="small text-muted"><?= htmlspecialchars($r->alamat ?? ''); ?></div>
+            <div class="small text-muted"><?= htmlspecialchars(isset($r->alamat) ? $r->alamat : ''); ?></div>
           </td>
           <td>
-            <?= $r->start_time ? substr($r->start_time,0,5) : '--:--'; ?>
+            <?= $r->start_time ? substr($r->start_time, 0, 5) : '--:--'; ?>
             -
-            <?= $r->end_time ? substr($r->end_time,0,5) : '--:--'; ?>
+            <?= $r->end_time ? substr($r->end_time, 0, 5) : '--:--'; ?>
           </td>
           <td>
-            <span class="badge bg-<?= $r->status=='aktif'?'success':($r->status=='draft'?'secondary':($r->status=='selesai'?'primary':'danger')); ?>">
+            <span class="badge bg-<?= $r->status == 'aktif' ? 'success' : ($r->status == 'draft' ? 'secondary' : ($r->status == 'selesai' ? 'primary' : 'danger')); ?>">
               <?= ucfirst($r->status); ?>
             </span>
           </td>
           <td class="text-end">
-            <a href="<?= base_url('penugasan_lapangan/detail/'.$r->id); ?>" class="btn btn-sm btn-outline-secondary">Detail</a>
-            <a href="<?= base_url('penugasan_lapangan/edit/'.$r->id); ?>" class="btn btn-sm btn-outline-primary">Edit</a>
-            <a href="<?= base_url('penugasan_lapangan/delete/'.$r->id); ?>"
+            <a href="<?= base_url('penugasan_lapangan/detail/' . $r->id); ?>" class="btn btn-sm btn-outline-secondary">Detail</a>
+            <a href="<?= base_url('penugasan_lapangan/edit/' . $r->id); ?>" class="btn btn-sm btn-outline-primary">Edit</a>
+            <a href="<?= base_url('penugasan_lapangan/delete/' . $r->id); ?>"
                class="btn btn-sm btn-outline-danger"
                onclick="return confirm('Hapus penugasan ini?');">Hapus</a>
           </td>
         </tr>
-      <?php endforeach; ?>
+      <?php
+endforeach; ?>
       </tbody>
     </table>
   </div>

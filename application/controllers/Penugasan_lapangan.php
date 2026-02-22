@@ -1,7 +1,8 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Penugasan_lapangan extends CI_Controller {
+class Penugasan_lapangan extends CI_Controller
+{
 
     public function __construct()
     {
@@ -9,7 +10,7 @@ class Penugasan_lapangan extends CI_Controller {
         require_role(['admin']);
 
         $this->load->model('Field_assignment_model');
-        $this->load->model('Employee_model');
+        $this->load->model('Pegawai_model');
         date_default_timezone_set('Asia/Jakarta');
     }
 
@@ -17,12 +18,12 @@ class Penugasan_lapangan extends CI_Controller {
     {
         $q = [
             'tanggal' => $this->input->get('tanggal', true),
-            'status'  => $this->input->get('status', true),
+            'status' => $this->input->get('status', true),
         ];
 
         $data['title'] = 'Penugasan Lapangan';
-        $data['rows']  = $this->Field_assignment_model->get_all($q);
-        $data['q']     = $q;
+        $data['rows'] = $this->Field_assignment_model->get_all($q);
+        $data['q'] = $q;
 
         $this->load->view('templates/header', $data);
         $this->load->view('penugasan_lapangan/index', $data);
@@ -32,7 +33,7 @@ class Penugasan_lapangan extends CI_Controller {
     public function create()
     {
         $data['title'] = 'Tambah Penugasan Lapangan';
-        $data['employees'] = $this->Employee_model->get_active_list();
+        $data['employees'] = $this->Pegawai_model->get_active_list();
         $data['selected_members'] = [];
 
         $this->load->view('templates/header', $data);
@@ -70,11 +71,12 @@ class Penugasan_lapangan extends CI_Controller {
     public function edit($id)
     {
         $row = $this->Field_assignment_model->get_by_id($id);
-        if (!$row) show_404();
+        if (!$row)
+            show_404();
 
         $data['title'] = 'Edit Penugasan Lapangan';
-        $data['row']   = $row;
-        $data['employees'] = $this->Employee_model->get_active_list();
+        $data['row'] = $row;
+        $data['employees'] = $this->Pegawai_model->get_active_list();
         $data['selected_members'] = $this->Field_assignment_model->get_member_ids($id);
 
         $this->load->view('templates/header', $data);
@@ -85,18 +87,19 @@ class Penugasan_lapangan extends CI_Controller {
     public function update($id)
     {
         $row = $this->Field_assignment_model->get_by_id($id);
-        if (!$row) show_404();
+        if (!$row)
+            show_404();
 
         $payload = $this->_payload_from_post();
         $members = $this->input->post('members');
 
         if (empty($payload['tanggal']) || empty($payload['lokasi_nama']) || empty($payload['lat']) || empty($payload['lng'])) {
             $this->session->set_flashdata('error', 'Tanggal, nama lokasi, lat dan lng wajib diisi.');
-            return redirect('penugasan_lapangan/edit/'.$id);
+            return redirect('penugasan_lapangan/edit/' . $id);
         }
         if (empty($members)) {
             $this->session->set_flashdata('error', 'Pilih minimal 1 pegawai.');
-            return redirect('penugasan_lapangan/edit/'.$id);
+            return redirect('penugasan_lapangan/edit/' . $id);
         }
 
         $payload['updated_at'] = date('Y-m-d H:i:s');
@@ -111,7 +114,8 @@ class Penugasan_lapangan extends CI_Controller {
     public function detail($id)
     {
         $row = $this->Field_assignment_model->get_by_id($id);
-        if (!$row) show_404();
+        if (!$row)
+            show_404();
 
         $data['title'] = 'Detail Penugasan';
         $data['row'] = $row;
@@ -125,7 +129,8 @@ class Penugasan_lapangan extends CI_Controller {
     public function delete($id)
     {
         $row = $this->Field_assignment_model->get_by_id($id);
-        if (!$row) show_404();
+        if (!$row)
+            show_404();
 
         $this->Field_assignment_model->delete($id);
         $this->session->set_flashdata('success', 'Penugasan berhasil dihapus.');
@@ -135,42 +140,40 @@ class Penugasan_lapangan extends CI_Controller {
     private function _payload_from_post()
     {
         return [
-            'tanggal'      => $this->input->post('tanggal', true),
-            'start_time'   => $this->input->post('start_time', true) ?: null,
-            'end_time'     => $this->input->post('end_time', true) ?: null,
-            'lokasi_nama'  => $this->input->post('lokasi_nama', true),
-            'alamat'       => $this->input->post('alamat', true),
-            'lat'          => $this->input->post('lat', true),
-            'lng'          => $this->input->post('lng', true),
+            'tanggal' => $this->input->post('tanggal', true),
+            'start_time' => $this->input->post('start_time', true) ?: null,
+            'end_time' => $this->input->post('end_time', true) ?: null,
+            'lokasi_nama' => $this->input->post('lokasi_nama', true),
+            'alamat' => $this->input->post('alamat', true),
+            'lat' => $this->input->post('lat', true),
+            'lng' => $this->input->post('lng', true),
             'radius_meter' => (int)($this->input->post('radius_meter', true) ?: 200),
-            'jenis'        => $this->input->post('jenis', true) ?: 'lainnya',
-            'catatan'      => $this->input->post('catatan', true),
-            'status'       => $this->input->post('status', true) ?: 'draft',
+            'jenis' => $this->input->post('jenis', true) ?: 'lainnya',
+            'catatan' => $this->input->post('catatan', true),
+            'status' => $this->input->post('status', true) ?: 'draft',
         ];
     }
 
-    public function history()
-{
-    $data['title'] = 'Riwayat Penugasan Lapangan';
+    public function history()    {
+        $data['title'] = 'Riwayat Penugasan Lapangan';
 
-    $start = $this->input->get('start', true) ?: date('Y-m-01');
-    $end   = $this->input->get('end', true) ?: date('Y-m-t');
-    $status = $this->input->get('status', true);
-    $employee_id = $this->input->get('employee_id', true);
+        $start = $this->input->get('start', true) ?: date('Y-m-01');
+        $end = $this->input->get('end', true) ?: date('Y-m-t');
+        $status = $this->input->get('status', true);
+        $employee_id = $this->input->get('employee_id', true);
 
-    $data['q'] = [
-        'start' => $start,
-        'end' => $end,
-        'status' => $status,
-        'employee_id' => $employee_id
-    ];
+        $data['q'] = [
+            'start' => $start,
+            'end' => $end,
+            'status' => $status,
+            'employee_id' => $employee_id
+        ];
 
-    $data['employees'] = $this->Employee_model->get_active_list();
-    $data['rows'] = $this->Field_assignment_model->get_history($start, $end, $employee_id, $status);
+        $data['employees'] = $this->Pegawai_model->get_active_list();
+        $data['rows'] = $this->Field_assignment_model->get_history($start, $end, $employee_id, $status);
 
-    $this->load->view('templates/header', $data);
-    $this->load->view('penugasan_lapangan/history', $data);
-    $this->load->view('templates/footer');
-}
+        $this->load->view('templates/header', $data);
+        $this->load->view('penugasan_lapangan/history', $data);
+        $this->load->view('templates/footer');    }
 
 }

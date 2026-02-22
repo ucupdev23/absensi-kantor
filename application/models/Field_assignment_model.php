@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 class Field_assignment_model extends CI_Model
 {
@@ -8,11 +8,13 @@ class Field_assignment_model extends CI_Model
     public function get_all($q = [])
     {
         $this->db->select('fa.*, u.nama_lengkap AS creator_name');
-        $this->db->from($this->table.' fa');
+        $this->db->from($this->table . ' fa');
         $this->db->join('users u', 'u.id = fa.created_by', 'left');
 
-        if (!empty($q['tanggal'])) $this->db->where('fa.tanggal', $q['tanggal']);
-        if (!empty($q['status']))  $this->db->where('fa.status', $q['status']);
+        if (!empty($q['tanggal']))
+            $this->db->where('fa.tanggal', $q['tanggal']);
+        if (!empty($q['status']))
+            $this->db->where('fa.status', $q['status']);
 
         $this->db->order_by('fa.tanggal', 'DESC');
         $this->db->order_by('fa.id', 'DESC');
@@ -54,7 +56,9 @@ class Field_assignment_model extends CI_Model
             ->where('assignment_id', $assignment_id)
             ->get()->result();
 
-        return array_map(fn($r) => (int)$r->employee_id, $rows);
+        return array_map(function ($r) {
+            return (int)$r->employee_id;
+        }, $rows);
     }
 
     public function set_members($assignment_id, $employee_ids)
@@ -66,11 +70,12 @@ class Field_assignment_model extends CI_Model
         $batch = [];
         foreach ((array)$employee_ids as $eid) {
             $eid = (int)$eid;
-            if ($eid <= 0) continue;
+            if ($eid <= 0)
+                continue;
             $batch[] = [
                 'assignment_id' => $assignment_id,
-                'employee_id'   => $eid,
-                'created_at'    => $now
+                'employee_id' => $eid,
+                'created_at' => $now
             ];
         }
 
@@ -92,54 +97,67 @@ class Field_assignment_model extends CI_Model
     }
 
     public function get_active_for_employee($employee_id, $date, $time = null)
-{
-    $this->db->select('fa.*');
-    $this->db->from('field_assignments fa');
-    $this->db->join('field_assignment_members fam', 'fam.assignment_id = fa.id');
-    $this->db->where('fam.employee_id', $employee_id);
-    $this->db->where('fa.tanggal', $date);
-    $this->db->where('fa.status', 'aktif');
+    {
+        $this->db->select('fa.*');
+        $this->db->from('field_assignments fa');
+        $this->db->join('field_assignment_members fam', 'fam.assignment_id = fa.id');
+        $this->db->where('fam.employee_id', $employee_id);
+        $this->db->where('fa.tanggal', $date);
+        $this->db->where('fa.status', 'aktif');
 
-    if ($time) {
-        $this->db->group_start();
-        $this->db->where('fa.start_time IS NULL', null, false);
-        $this->db->or_where('fa.start_time <=', $time);
-        $this->db->group_end();
+        if ($time) {
+            $this->db->group_start();
+            $this->db->where('fa.start_time IS NULL', null, false);
+            $this->db->or_where('fa.start_time <=', $time);
+            $this->db->group_end();
 
-        $this->db->group_start();
-        $this->db->where('fa.end_time IS NULL', null, false);
-        $this->db->or_where('fa.end_time >=', $time);
-        $this->db->group_end();
+            $this->db->group_start();
+            $this->db->where('fa.end_time IS NULL', null, false);
+            $this->db->or_where('fa.end_time >=', $time);
+            $this->db->group_end();
+        }
+
+        $this->db->order_by('fa.id', 'DESC');
+        return $this->db->get()->row();
+    }
+    public function get_history($start_date, $end_date, $employee_id = null, $status = null)
+    {
+        $this->db->select('fa.*, GROUP_CONCAT(CONCAT(u.nama_lengkap, " (", e.kode_pegawai, ")") SEPARATOR ", ") AS anggota');
+        $this->db->from('field_assignments fa');
+        $this->db->join('field_assignment_members fam', 'fam.assignment_id = fa.id', 'left');
+        $this->db->join('employees e', 'e.id = fam.employee_id', 'left');
+        $this->db->join('users u', 'u.id = e.user_id', 'left');
+
+        $this->db->where('fa.tanggal >=', $start_date);
+        $this->db->where('fa.tanggal <=', $end_date);
+
+        if (!empty($status)) {
+            $this->db->where('fa.status', $status);
+        }
+        if (!empty($employee_id)) {
+            $this->db->where('fam.employee_id', (int)$employee_id);
+        }
+
+        $this->db->group_by('fa.id');
+        $this->db->order_by('fa.tanggal', 'DESC');
+        $this->db->order_by('fa.id', 'DESC');
+
+        return $this->db->get()->result();
     }
 
-    $this->db->order_by('fa.id', 'DESC');
-    return $this->db->get()->row();
-}
-
-public function get_history($start_date, $end_date, $employee_id = null, $status = null)
-{
-    $this->db->select('fa.*, GROUP_CONCAT(CONCAT(u.nama_lengkap, " (", e.kode_pegawai, ")") SEPARATOR ", ") AS anggota');
-    $this->db->from('field_assignments fa');
-    $this->db->join('field_assignment_members fam', 'fam.assignment_id = fa.id', 'left');
-    $this->db->join('employees e', 'e.id = fam.employee_id', 'left');
-    $this->db->join('users u', 'u.id = e.user_id', 'left');
-
-    $this->db->where('fa.tanggal >=', $start_date);
-    $this->db->where('fa.tanggal <=', $end_date);
-
-    if (!empty($status)) {
-        $this->db->where('fa.status', $status);
+    /**
+     * Penugasan aktif hari ini + jumlah anggota
+     */
+    public function get_today_active($date)
+    {
+        $this->db->select('fa.*, COUNT(fam.id) AS jml_anggota');
+        $this->db->from($this->table . ' fa');
+        $this->db->join('field_assignment_members fam', 'fam.assignment_id = fa.id', 'left');
+        $this->db->where('fa.tanggal', $date);
+        $this->db->where('fa.status', 'aktif');
+        $this->db->group_by('fa.id');
+        $this->db->order_by('fa.id', 'DESC');
+        return $this->db->get()->result();
     }
-    if (!empty($employee_id)) {
-        $this->db->where('fam.employee_id', (int)$employee_id);
-    }
-
-    $this->db->group_by('fa.id');
-    $this->db->order_by('fa.tanggal', 'DESC');
-    $this->db->order_by('fa.id', 'DESC');
-
-    return $this->db->get()->result();
-}
-
 
 }

@@ -1,15 +1,15 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class User_model extends CI_Model {
+class User_model extends CI_Model
+{
 
     private $table = 'users';
 
     public function get_by_username($username)
     {
         return $this->db->get_where($this->table, [
-            'username' => $username,
-            'status'   => 'aktif'
+            'username' => $username
         ])->row();
     }
 
@@ -45,7 +45,8 @@ class User_model extends CI_Model {
     {
         // coba username dulu
         $u = $this->find_by_username($identifier);
-        if ($u) return $u;
+        if ($u)
+            return $u;
 
         // kalau tidak ketemu, coba no_wa
         return $this->find_by_no_wa($identifier);

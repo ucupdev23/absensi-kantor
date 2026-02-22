@@ -120,6 +120,37 @@ class Laporan extends CI_Controller {
 }
 
 
+
+        // Hitung persen_hadir dan rata_jam per pegawai
+        foreach ($rekap as &$rp) {
+            $total_hari = $rp['jumlah_hari'];
+            $rp['persen_hadir'] = ($total_hari > 0) ? round(($rp['hadir'] / $total_hari) * 100) : 0;
+            $rp['rata_jam']     = ($rp['hari_masuk'] > 0) ? round($rp['total_jam'] / $rp['hari_masuk'], 2) : 0;
+        }
+        unset($rp);
+
+        // Summary statistics keseluruhan
+        $summary = array(
+            'total_records'     => count($report),
+            'total_hadir'       => 0,
+            'total_telat'       => 0,
+            'total_menit_telat' => 0,
+            'total_izin'        => 0,
+            'total_cuti'        => 0,
+            'total_sakit'       => 0,
+        );
+        foreach ($rekap as $rk) {
+            $summary['total_hadir']       += $rk['hadir'];
+            $summary['total_telat']       += $rk['telat'];
+            $summary['total_menit_telat'] += $rk['total_menit_telat'];
+            $summary['total_izin']        += $rk['izin'];
+            $summary['total_cuti']        += $rk['cuti'];
+            $summary['total_sakit']       += $rk['sakit'];
+        }
+        $summary['persen_kehadiran'] = ($summary['total_records'] > 0)
+            ? round(($summary['total_hadir'] / $summary['total_records']) * 100, 1)
+            : 0;
+
         $data['title']      = 'Laporan Absensi Bulanan';
         $data['bulan']      = $bulan;
         $data['tahun']      = $tahun;
@@ -128,6 +159,7 @@ class Laporan extends CI_Controller {
 
         $data['report']     = $report;
         $data['rekap']      = $rekap;
+        $data['summary']    = $summary;
 
         $data['list_pegawai'] = $this->Pegawai_model->get_all();
         $data['list_lokasi']  = $this->Lokasi_model->get_all();

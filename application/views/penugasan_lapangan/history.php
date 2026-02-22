@@ -21,20 +21,22 @@
         <label class="form-label">Status</label>
         <select name="status" class="form-select">
           <option value="">Semua</option>
-          <?php foreach (['draft','aktif','selesai','batal'] as $st): ?>
-            <option value="<?= $st; ?>" <?= ($q['status']===$st)?'selected':''; ?>><?= ucfirst($st); ?></option>
-          <?php endforeach; ?>
+          <?php foreach (['draft', 'aktif', 'selesai', 'batal'] as $st): ?>
+            <option value="<?= $st; ?>" <?=($q['status'] === $st) ? 'selected' : ''; ?>><?= ucfirst($st); ?></option>
+          <?php
+endforeach; ?>
         </select>
       </div>
       <div class="col-12 col-md-3">
         <label class="form-label">Pegawai</label>
         <select name="employee_id" class="form-select">
           <option value="">Semua</option>
-          <?php foreach($employees as $e): ?>
-            <option value="<?= (int)$e->id; ?>" <?= ((string)$q['employee_id']===(string)$e->id)?'selected':''; ?>>
+          <?php foreach ($employees as $e): ?>
+            <option value="<?=(int)$e->id; ?>" <?=((string)$q['employee_id'] === (string)$e->id) ? 'selected' : ''; ?>>
               <?= htmlspecialchars($e->nama_lengkap); ?> (<?= htmlspecialchars($e->kode_pegawai); ?>)
             </option>
-          <?php endforeach; ?>
+          <?php
+endforeach; ?>
         </select>
       </div>
 
@@ -60,39 +62,41 @@
         </tr>
       </thead>
       <tbody>
-        <?php if(empty($rows)): ?>
+        <?php if (empty($rows)): ?>
           <tr><td colspan="6" class="text-center text-muted py-4">Tidak ada data.</td></tr>
-        <?php endif; ?>
+        <?php
+endif; ?>
 
-        <?php foreach($rows as $r): ?>
+        <?php foreach ($rows as $r): ?>
           <tr>
             <td><?= date('d M Y', strtotime($r->tanggal)); ?></td>
             <td>
               <div class="fw-semibold"><?= htmlspecialchars($r->lokasi_nama); ?></div>
-              <div class="small text-muted"><?= htmlspecialchars($r->alamat ?? ''); ?></div>
+              <div class="small text-muted"><?= htmlspecialchars(isset($r->alamat) ? $r->alamat : ''); ?></div>
             </td>
             <td>
-              <?= $r->start_time ? substr($r->start_time,0,5) : '--:--'; ?>
+              <?= $r->start_time ? substr($r->start_time, 0, 5) : '--:--'; ?>
               -
-              <?= $r->end_time ? substr($r->end_time,0,5) : '--:--'; ?>
+              <?= $r->end_time ? substr($r->end_time, 0, 5) : '--:--'; ?>
             </td>
             <td style="min-width:260px;">
-              <div class="small"><?= htmlspecialchars($r->anggota ?? '-'); ?></div>
+              <div class="small"><?= htmlspecialchars(isset($r->anggota) ? $r->anggota : '-'); ?></div>
             </td>
             <td>
-              <span class="badge bg-<?= $r->status=='aktif'?'success':($r->status=='draft'?'secondary':($r->status=='selesai'?'primary':'danger')); ?>">
+              <span class="badge bg-<?= $r->status == 'aktif' ? 'success' : ($r->status == 'draft' ? 'secondary' : ($r->status == 'selesai' ? 'primary' : 'danger')); ?>">
                 <?= ucfirst($r->status); ?>
               </span>
             </td>
             <td class="text-end">
-              <a href="<?= base_url('penugasan_lapangan/detail/'.$r->id); ?>" class="btn btn-sm btn-outline-secondary">Detail</a>
+              <a href="<?= base_url('penugasan_lapangan/detail/' . $r->id); ?>" class="btn btn-sm btn-outline-secondary">Detail</a>
               <a target="_blank" class="btn btn-sm btn-outline-dark"
                  href="https://www.google.com/maps?q=<?= $r->lat; ?>,<?= $r->lng; ?>">
                 Maps
               </a>
             </td>
           </tr>
-        <?php endforeach; ?>
+        <?php
+endforeach; ?>
       </tbody>
     </table>
   </div>

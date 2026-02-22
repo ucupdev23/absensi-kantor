@@ -1,8 +1,8 @@
 <?php
 $status_harian = $absen_hari ? $absen_hari->status_harian : null;
-$is_libur_pribadi = in_array($status_harian, ['Cuti','Izin','Sakit']);
+$is_libur_pribadi = in_array($status_harian, ['Cuti', 'Izin', 'Sakit']);
 
-$jam_masuk  = $absen_hari ? $absen_hari->jam_masuk : null;
+$jam_masuk = $absen_hari ? $absen_hari->jam_masuk : null;
 $jam_pulang = $absen_hari ? $absen_hari->jam_pulang : null;
 ?>
 
@@ -210,7 +210,8 @@ body {
         <span><?= $this->session->flashdata('error'); ?></span>
       </div>
     </div>
-  <?php endif; ?>
+  <?php
+endif; ?>
 
   <?php if ($this->session->flashdata('success')): ?>
     <div class="alert alert-modern mb-4" style="background: #dcfce7; color: #166534; border-left-color: var(--success);">
@@ -219,7 +220,8 @@ body {
         <span><?= $this->session->flashdata('success'); ?></span>
       </div>
     </div>
-  <?php endif; ?>
+  <?php
+endif; ?>
 
   <!-- Main Grid -->
   <div class="row g-4">
@@ -258,7 +260,7 @@ body {
           </div>
           <div class="d-flex align-items-center gap-3">
             <span style="color: var(--primary);">⏰</span>
-            <span><strong>Shift:</strong> <?= htmlspecialchars($pegawai->nama_shift); ?> (<?= substr($pegawai->jam_masuk,0,5); ?> - <?= substr($pegawai->jam_pulang,0,5); ?>)</span>
+            <span><strong>Shift:</strong> <?= htmlspecialchars($pegawai->nama_shift); ?> (<?= substr($pegawai->jam_masuk, 0, 5); ?> - <?= substr($pegawai->jam_pulang, 0, 5); ?>)</span>
           </div>
         </div>
 
@@ -269,14 +271,16 @@ body {
             <div class="info-value"><?= $jam_masuk ? date('H:i', strtotime($jam_masuk)) : '--:--'; ?></div>
             <?php if ($absen_hari): ?>
               <span class="badge-status badge-masuk mt-2"><?= $absen_hari->status_masuk; ?></span>
-            <?php endif; ?>
+            <?php
+endif; ?>
           </div>
           <div class="info-item">
             <div class="info-label">Jam Pulang</div>
             <div class="info-value"><?= $jam_pulang ? date('H:i', strtotime($jam_pulang)) : '--:--'; ?></div>
             <?php if ($absen_hari): ?>
               <span class="badge-status badge-pulang mt-2"><?= $absen_hari->status_pulang; ?></span>
-            <?php endif; ?>
+            <?php
+endif; ?>
           </div>
         </div>
 
@@ -288,7 +292,8 @@ body {
               <span>Hari ini tercatat sebagai <strong><?= $status_harian; ?></strong>, Anda tidak perlu absen.</span>
             </div>
           </div>
-        <?php endif; ?>
+        <?php
+endif; ?>
       </div>
     </div>
 
@@ -313,8 +318,8 @@ body {
               <span>📍</span>
               <span class="fw-semibold">Mode Lapangan Aktif</span>
             </div>
-            <p class="mb-2"><strong><?= htmlspecialchars($penugasan->lokasi_nama); ?></strong> (Radius <?= (int)$penugasan->radius_meter; ?>m)</p>
-            <p class="small mb-2" style="color: #92400e;"><?= nl2br(htmlspecialchars($penugasan->alamat ?? '')); ?></p>
+            <p class="mb-2"><strong><?= htmlspecialchars($penugasan->lokasi_nama); ?></strong> (Radius <?=(int)$penugasan->radius_meter; ?>m)</p>
+            <p class="small mb-2" style="color: #92400e;"><?= nl2br(htmlspecialchars(isset($penugasan->alamat) ? $penugasan->alamat : '')); ?></p>
             <a href="https://www.google.com/maps?q=<?= $penugasan->lat; ?>,<?= $penugasan->lng; ?>" 
                target="_blank"
                class="btn-outline-modern d-inline-flex align-items-center gap-2">
@@ -322,14 +327,16 @@ body {
               <span>Buka Google Maps</span>
             </a>
           </div>
-        <?php else: ?>
+        <?php
+else: ?>
           <div class="alert-modern alert-kantor mb-4">
             <div class="d-flex align-items-center gap-2">
               <span>🏢</span>
               <span>Tidak ada penugasan lapangan aktif. Absensi wajib di kantor.</span>
             </div>
           </div>
-        <?php endif; ?>
+        <?php
+endif; ?>
 
         <!-- Camera Check Button -->
         <button type="button" class="btn-outline-modern w-100 mb-3" onclick="cekPerangkat()">
@@ -358,7 +365,7 @@ body {
           <button type="button"
                   class="btn-modern"
                   onclick="handleAbsen('masuk')"
-                  <?= ($jam_masuk || $is_libur_pribadi) ? 'disabled' : ''; ?>>
+                  <?=($jam_masuk || $is_libur_pribadi) ? 'disabled' : ''; ?>>
             <div class="d-flex align-items-center justify-content-center gap-2">
               <span>📷</span>
               <span><?= $jam_masuk ? 'Sudah Absen Masuk' : 'Absen Masuk'; ?></span>
@@ -368,15 +375,18 @@ body {
           <button type="button"
                   class="btn-modern"
                   onclick="handleAbsen('pulang')"
-                  <?= (!$jam_masuk || $jam_pulang || $is_libur_pribadi) ? 'disabled' : ''; ?>>
+                  <?=(!$jam_masuk || $jam_pulang || $is_libur_pribadi) ? 'disabled' : ''; ?>>
             <div class="d-flex align-items-center justify-content-center gap-2">
               <span>👋</span>
               <span>
                 <?php
-                if (!$jam_masuk) echo 'Absen Pulang (belum absen masuk)';
-                elseif ($jam_pulang) echo 'Sudah Absen Pulang';
-                else echo 'Absen Pulang';
-                ?>
+if (!$jam_masuk)
+  echo 'Absen Pulang (belum absen masuk)';
+elseif ($jam_pulang)
+  echo 'Sudah Absen Pulang';
+else
+  echo 'Absen Pulang';
+?>
               </span>
             </div>
           </button>
