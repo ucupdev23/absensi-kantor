@@ -26,13 +26,27 @@
         }
 
         .navbar-custom {
-            background: linear-gradient(90deg, #670F7A, #B894C0);
+            background-color: #670F7A;
         }
 
         .navbar-custom .navbar-brand,
         .navbar-custom .nav-link {
             color: #ffffff !important;
             font-weight: 500;
+        }
+
+        .navbar-custom .navbar-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+
+        .navbar-logo {
+            width: 34px;
+            height: 34px;
+            object-fit: contain;
+            display: block;
+            flex-shrink: 0;
         }
 
         .navbar-custom .nav-link.active {
@@ -86,7 +100,8 @@
 <nav class="navbar navbar-expand-lg navbar-custom navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand fw-bold" href="<?= base_url('dashboard'); ?>">
-            Absensi Kantor
+            <img src="<?= base_url('public/logo.png'); ?>" alt="Logo AK" class="navbar-logo">
+            <span>Absensi Kantor</span>
         </a>
 
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"

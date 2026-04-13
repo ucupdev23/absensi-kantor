@@ -4,14 +4,17 @@
             <div class="card-body p-4">
                 <div class="text-center mb-3">
                     <div class="mb-2">
-                        <!-- lingkaran logo sederhana -->
                         <div style="
-                            width:56px;height:56px;
-                            border-radius:50%;
-                            background: linear-gradient(135deg,#670F7A,#B894C0);
-                            display:flex;align-items:center;justify-content:center;
-                            color:#fff;font-weight:700;font-size:22px;">
-                            AK
+                            width:72px;height:72px;
+                            margin:0 auto;
+                            display:flex;align-items:center;justify-content:center;">
+                            <img src="<?= base_url('public/logo.png'); ?>"
+                                 alt="Logo AK"
+                                 style="
+                                    width:100%;
+                                    height:100%;
+                                    object-fit:contain;
+                                    display:block;">
                         </div>
                     </div>
                     <h5 class="mb-1" style="color:#670F7A;">Login</h5>
