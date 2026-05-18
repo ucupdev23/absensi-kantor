@@ -46,7 +46,7 @@ $status_harian = $absen_hari ? $absen_hari->status_harian : null;
                         Buka Halaman Absensi
                     </a>
                     <a href="<?= base_url('pengajuan'); ?>" class="btn btn-outline-secondary">
-                        Pengajuan Cuti / Izin / Sakit
+                        Pengajuan Cuti / Ganti Hari / Potong Gaji / Sakit
                     </a>
                 </div>
             </div>

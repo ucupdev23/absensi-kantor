@@ -16,7 +16,8 @@
                         <select name="jenis" class="form-select" required>
                             <option value="">- Pilih -</option>
                             <option value="cuti">Cuti</option>
-                            <option value="izin">Izin</option>
+                            <option value="ganti_hari">Ganti Hari</option>
+                            <option value="potong_gaji">Potong Gaji</option>
                             <option value="sakit">Sakit</option>
                         </select>
                     </div>

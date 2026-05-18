@@ -81,6 +81,8 @@ class Laporan extends CI_Controller {
             'izin'              => 0,
             'cuti'              => 0,
             'sakit'             => 0,
+            'ganti_hari'        => 0,
+            'potong_gaji'       => 0,
             'total_jam'         => 0,
             'jumlah_hari'       => 0,
             'total_menit_telat' => 0,
@@ -97,6 +99,8 @@ class Laporan extends CI_Controller {
     elseif ($status_harian == 'Izin')  $rekap[$key]['izin']++;
     elseif ($status_harian == 'Cuti')  $rekap[$key]['cuti']++;
     elseif ($status_harian == 'Sakit') $rekap[$key]['sakit']++;
+    elseif ($status_harian == 'Ganti_hari') $rekap[$key]['ganti_hari']++;
+    elseif ($status_harian == 'Potong_gaji') $rekap[$key]['potong_gaji']++;
 
     // HITUNG TELAT MENIT
     $menit_telat = 0;
@@ -138,6 +142,8 @@ class Laporan extends CI_Controller {
             'total_izin'        => 0,
             'total_cuti'        => 0,
             'total_sakit'       => 0,
+            'total_ganti_hari'  => 0,
+            'total_potong_gaji' => 0,
         );
         foreach ($rekap as $rk) {
             $summary['total_hadir']       += $rk['hadir'];
@@ -146,6 +152,8 @@ class Laporan extends CI_Controller {
             $summary['total_izin']        += $rk['izin'];
             $summary['total_cuti']        += $rk['cuti'];
             $summary['total_sakit']       += $rk['sakit'];
+            $summary['total_ganti_hari']  += $rk['ganti_hari'];
+            $summary['total_potong_gaji'] += $rk['potong_gaji'];
         }
         $summary['persen_kehadiran'] = ($summary['total_records'] > 0)
             ? round(($summary['total_hadir'] / $summary['total_records']) * 100, 1)

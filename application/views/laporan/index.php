@@ -105,12 +105,14 @@ endforeach; ?>
     <div class="col-6 col-md-3">
         <div class="card border-0 shadow-sm" style="border-left:4px solid #0d6efd !important;">
             <div class="card-body py-3">
-                <div class="text-muted small">Izin / Cuti / Sakit</div>
-                <div class="h4 mb-0 fw-bold text-primary"><?= $summary['total_izin'] + $summary['total_cuti'] + $summary['total_sakit']; ?></div>
+                <div class="text-muted small">Izin / Cuti / Sakit / Dll</div>
+                <div class="h4 mb-0 fw-bold text-primary"><?= $summary['total_izin'] + $summary['total_cuti'] + $summary['total_sakit'] + $summary['total_ganti_hari'] + $summary['total_potong_gaji']; ?></div>
                 <div class="text-muted small">
                     📋 <?= $summary['total_izin']; ?>
                     &nbsp;🏖️ <?= $summary['total_cuti']; ?>
                     &nbsp;🏥 <?= $summary['total_sakit']; ?>
+                    &nbsp;🔄 <?= $summary['total_ganti_hari']; ?>
+                    &nbsp;📉 <?= $summary['total_potong_gaji']; ?>
                 </div>
             </div>
         </div>
@@ -150,6 +152,16 @@ endforeach; ?>
                         <td class="text-end text-muted"><?= $summary['total_records'] > 0 ? round($summary['total_izin'] / $summary['total_records'] * 100, 1) : 0; ?>%</td>
                     </tr>
                     <tr>
+                        <td><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#0dcaf0;"></span> Ganti Hari</td>
+                        <td class="fw-bold text-end"><?= $summary['total_ganti_hari']; ?></td>
+                        <td class="text-end text-muted"><?= $summary['total_records'] > 0 ? round($summary['total_ganti_hari'] / $summary['total_records'] * 100, 1) : 0; ?>%</td>
+                    </tr>
+                    <tr>
+                        <td><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#6610f2;"></span> Potong Gaji</td>
+                        <td class="fw-bold text-end"><?= $summary['total_potong_gaji']; ?></td>
+                        <td class="text-end text-muted"><?= $summary['total_records'] > 0 ? round($summary['total_potong_gaji'] / $summary['total_records'] * 100, 1) : 0; ?>%</td>
+                    </tr>
+                    <tr>
                         <td><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#ffc107;"></span> Cuti</td>
                         <td class="fw-bold text-end"><?= $summary['total_cuti']; ?></td>
                         <td class="text-end text-muted"><?= $summary['total_records'] > 0 ? round($summary['total_cuti'] / $summary['total_records'] * 100, 1) : 0; ?>%</td>
@@ -179,6 +191,8 @@ endforeach; ?>
                         <th class="text-center">Hadir</th>
                         <th class="text-center">Telat</th>
                         <th class="text-center">Izin</th>
+                        <th class="text-center">Ganti Hari</th>
+                        <th class="text-center">Potong Gaji</th>
                         <th class="text-center">Cuti</th>
                         <th class="text-center">Sakit</th>
                         <th class="text-center">Telat (menit)</th>
@@ -236,6 +250,24 @@ endforeach; ?>
         endif; ?>
                         </td>
                         <td class="text-center">
+                            <?php if ($r['ganti_hari'] > 0): ?>
+                                <span class="badge bg-info text-dark"><?= $r['ganti_hari']; ?></span>
+                            <?php
+        else: ?>
+                                <span class="text-muted">0</span>
+                            <?php
+        endif; ?>
+                        </td>
+                        <td class="text-center">
+                            <?php if ($r['potong_gaji'] > 0): ?>
+                                <span class="badge" style="background:#6610f2;color:#fff;"><?= $r['potong_gaji']; ?></span>
+                            <?php
+        else: ?>
+                                <span class="text-muted">0</span>
+                            <?php
+        endif; ?>
+                        </td>
+                        <td class="text-center">
                             <?php if ($r['cuti'] > 0): ?>
                                 <span class="badge" style="background:#d4a017;color:#fff;"><?= $r['cuti']; ?></span>
                             <?php
@@ -281,7 +313,7 @@ endforeach; ?>
                         <td colspan="3" class="text-end">TOTAL</td>
                         <td class="text-center"><?= $grand_total_hadir; ?></td>
                         <td class="text-center"><?= $grand_total_telat; ?></td>
-                        <td colspan="3" class="text-center">—</td>
+                        <td colspan="5" class="text-center">—</td>
                         <td class="text-center"><?= number_format($grand_total_menit); ?> menit</td>
                         <td></td>
                         <td></td>
@@ -388,6 +420,10 @@ endif; ?>
             $sh_color = 'warning';
         elseif ($sh == 'Sakit')
             $sh_color = 'danger';
+        elseif ($sh == 'Ganti_hari' || $sh == 'Ganti Hari')
+            $sh_color = 'info text-dark';
+        elseif ($sh == 'Potong_gaji' || $sh == 'Potong Gaji')
+            $sh_color = 'dark';
 ?>
                             <span class="badge bg-<?= $sh_color; ?> <?= $sh == 'Cuti' ? 'text-dark' : ''; ?>"><?= $sh; ?></span>
                         </td>
@@ -419,21 +455,25 @@ endif; ?>
     new Chart(ctx.getContext('2d'), {
         type: 'doughnut',
         data: {
-            labels: ['Hadir (Tepat Waktu)', 'Telat', 'Izin', 'Cuti', 'Sakit'],
+            labels: ['Hadir (Tepat Waktu)', 'Telat', 'Izin', 'Cuti', 'Sakit', 'Ganti Hari', 'Potong Gaji'],
             datasets: [{
                 data: [
                     hadir,
                     <?= $summary['total_telat']; ?>,
                     <?= $summary['total_izin']; ?>,
                     <?= $summary['total_cuti']; ?>,
-                    <?= $summary['total_sakit']; ?>
+                    <?= $summary['total_sakit']; ?>,
+                    <?= $summary['total_ganti_hari']; ?>,
+                    <?= $summary['total_potong_gaji']; ?>
                 ],
                 backgroundColor: [
                     '#198754',
                     '#fd7e14',
                     '#0d6efd',
                     '#ffc107',
-                    '#dc3545'
+                    '#dc3545',
+                    '#0dcaf0',
+                    '#6610f2'
                 ],
                 borderWidth: 2,
                 borderColor: '#fff'

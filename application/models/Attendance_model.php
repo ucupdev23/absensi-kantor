@@ -176,7 +176,9 @@ class Attendance_model extends CI_Model
                     SUM(CASE WHEN status_masuk  = 'Telat'  THEN 1 ELSE 0 END) AS telat,
                     SUM(CASE WHEN status_harian = 'Izin'   THEN 1 ELSE 0 END) AS izin,
                     SUM(CASE WHEN status_harian = 'Cuti'   THEN 1 ELSE 0 END) AS cuti,
-                    SUM(CASE WHEN status_harian = 'Sakit'  THEN 1 ELSE 0 END) AS sakit
+                    SUM(CASE WHEN status_harian = 'Sakit'  THEN 1 ELSE 0 END) AS sakit,
+                    SUM(CASE WHEN status_harian = 'Ganti_hari' THEN 1 ELSE 0 END) AS ganti_hari,
+                    SUM(CASE WHEN status_harian = 'Potong_gaji' THEN 1 ELSE 0 END) AS potong_gaji
                 FROM {$this->table}
                 WHERE tanggal = ?";
         $row = $this->db->query($sql, array($date))->row();
@@ -186,7 +188,9 @@ class Attendance_model extends CI_Model
             'telat' => (int)(isset($row->telat) ? $row->telat : 0),
             'izin' => (int)(isset($row->izin) ? $row->izin : 0),
             'cuti' => (int)(isset($row->cuti) ? $row->cuti : 0),
-            'sakit' => (int)(isset($row->sakit) ? $row->sakit : 0)
+            'sakit' => (int)(isset($row->sakit) ? $row->sakit : 0),
+            'ganti_hari' => (int)(isset($row->ganti_hari) ? $row->ganti_hari : 0),
+            'potong_gaji' => (int)(isset($row->potong_gaji) ? $row->potong_gaji : 0)
         );
     }
 

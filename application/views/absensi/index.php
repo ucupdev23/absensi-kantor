@@ -1,6 +1,6 @@
 <?php
 $status_harian = $absen_hari ? $absen_hari->status_harian : null;
-$is_libur_pribadi = in_array($status_harian, ['Cuti', 'Izin', 'Sakit']);
+$is_libur_pribadi = in_array($status_harian, ['Cuti', 'Izin', 'Sakit', 'Ganti_hari', 'Potong_gaji']);
 
 $jam_masuk = $absen_hari ? $absen_hari->jam_masuk : null;
 $jam_pulang = $absen_hari ? $absen_hari->jam_pulang : null;

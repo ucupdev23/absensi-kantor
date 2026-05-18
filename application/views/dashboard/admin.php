@@ -76,24 +76,40 @@
             </div>
         </div>
     </div>
-    <!-- Izin -->
-    <div class="col-6 col-md-4">
-        <div class="card border-0 shadow-sm" style="border-left:4px solid #0d6efd !important;">
+    <!-- Ganti Hari -->
+    <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm" style="border-left:4px solid #0dcaf0 !important;">
             <div class="card-body py-3">
                 <div class="d-flex align-items-center">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width:42px;height:42px;background:rgba(13,110,253,0.1);">
-                        <span style="font-size:1.2rem;">📋</span>
+                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width:42px;height:42px;background:rgba(13,202,240,0.1);">
+                        <span style="font-size:1.2rem;">🔄</span>
                     </div>
                     <div>
-                        <div class="text-muted small">Izin</div>
-                        <div class="h4 mb-0 fw-bold text-primary"><?= $izin; ?></div>
+                        <div class="text-muted small">Ganti Hari</div>
+                        <div class="h4 mb-0 fw-bold text-info"><?= $ganti_hari; ?></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Potong Gaji -->
+    <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm" style="border-left:4px solid #6610f2 !important;">
+            <div class="card-body py-3">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width:42px;height:42px;background:rgba(102,16,242,0.1);">
+                        <span style="font-size:1.2rem;">📉</span>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Potong Gaji</div>
+                        <div class="h4 mb-0 fw-bold" style="color:#6610f2;"><?= $potong_gaji; ?></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <!-- Cuti -->
-    <div class="col-6 col-md-4">
+    <div class="col-6 col-md-3">
         <div class="card border-0 shadow-sm" style="border-left:4px solid #ffc107 !important;">
             <div class="card-body py-3">
                 <div class="d-flex align-items-center">
@@ -109,7 +125,7 @@
         </div>
     </div>
     <!-- Sakit -->
-    <div class="col-6 col-md-4">
+    <div class="col-6 col-md-3">
         <div class="card border-0 shadow-sm" style="border-left:4px solid #dc3545 !important;">
             <div class="card-body py-3">
                 <div class="d-flex align-items-center">

@@ -33,7 +33,7 @@ class Dashboard extends CI_Controller
         // Stat cards
         $total_pegawai = count($this->Pegawai_model->get_all());
         $stats = $this->Attendance_model->count_today_by_status($today);
-        $sudah_absen = $stats['hadir'] + $stats['izin'] + $stats['cuti'] + $stats['sakit'];
+        $sudah_absen = $stats['hadir'] + $stats['izin'] + $stats['cuti'] + $stats['sakit'] + $stats['ganti_hari'] + $stats['potong_gaji'];
         $belum_absen = $total_pegawai - $sudah_absen;
         if ($belum_absen < 0)
             $belum_absen = 0;
@@ -57,6 +57,8 @@ class Dashboard extends CI_Controller
             'izin' => $stats['izin'],
             'cuti' => $stats['cuti'],
             'sakit' => $stats['sakit'],
+            'ganti_hari' => $stats['ganti_hari'],
+            'potong_gaji' => $stats['potong_gaji'],
             'belum_absen' => $belum_absen,
             'top_rajin' => $top_rajin,
             'top_telat' => $top_telat,
