@@ -2,7 +2,11 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 /* |-------------------------------------------------------------------------- | Base Site URL |-------------------------------------------------------------------------- | | URL to your CodeIgniter root. Typically this will be your base URL, | WITH a trailing slash: | |	http://example.com/ | | WARNING: You MUST set this value! | | If it is not set, then CodeIgniter will try to guess the protocol and | path to your installation, but due to security concerns the hostname will | be set to $_SERVER['SERVER_ADDR'] if available, or localhost otherwise. | The auto-detection mechanism exists only for convenience during | development and MUST NOT be used in production! | | If you need to allow multiple domains, remember that this file is still | a PHP script and you can easily do that on your own. | */
-// $config['base_url'] = 'http://localhost/absensi_kantor/';
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
+$script_dir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
+$script_dir = trim($script_dir, '/');
+// $config['base_url'] = $protocol . '://' . $host . ($script_dir ? '/' . $script_dir : '') . '/';
 // $config['base_url'] = 'http://192.168.1.4/absensi_kantor/';
 // $config['base_url'] = 'https://kantor.yusufabdil.com/';
 $config['base_url'] = 'https://absensi-kantor.sigmamediaasia.com/';
