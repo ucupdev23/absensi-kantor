@@ -7,7 +7,7 @@
 
 RewriteEngine On
 # RewriteBase /absensi_kantor/
-RewriteBase /
+# RewriteBase /
 
 # Redirect ke index.php jika file/folder tidak ditemukan
 RewriteCond %{REQUEST_FILENAME} !-f
