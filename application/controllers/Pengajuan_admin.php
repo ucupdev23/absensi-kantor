@@ -35,6 +35,37 @@ class Pengajuan_admin extends CI_Controller {
 
         $admin_id = $this->session->userdata('user_id');
 
+        // Validasi jatah cuti jika jenis pengajuan adalah 'cuti'
+        if ($row->jenis == 'cuti') {
+            $this->load->model('Pegawai_model');
+            $pegawai = $this->Pegawai_model->get($row->employee_id);
+            
+            // Hitung hari yang diajukan per tahun
+            $start = new DateTime($row->tanggal_mulai);
+            $end = new DateTime($row->tanggal_selesai);
+            $requested_by_year = [];
+
+            for ($d = clone $start; $d <= $end; $d->modify('+1 day')) {
+                if ($d->format('N') != 7) {
+                    $yr = $d->format('Y');
+                    if (!isset($requested_by_year[$yr])) {
+                        $requested_by_year[$yr] = 0;
+                    }
+                    $requested_by_year[$yr]++;
+                }
+            }
+
+            foreach ($requested_by_year as $yr => $days) {
+                $used = $this->Leave_model->get_used_leave_days($row->employee_id, $yr);
+                $jatah_cuti = (int)$pegawai->jatah_cuti;
+                if ($used + $days > $jatah_cuti) {
+                    $remaining = $jatah_cuti - $used;
+                    $this->session->set_flashdata('error', "Gagal menyetujui. Jatah cuti pegawai pada tahun {$yr} tidak mencukupi (Sisa: {$remaining} hari, Diajukan: {$days} hari).");
+                    return redirect('pengajuan-admin');
+                }
+            }
+        }
+
         // update status pengajuan
         $this->Leave_model->update($id, [
             'status'              => 'disetujui',

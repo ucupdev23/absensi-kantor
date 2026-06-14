@@ -20,6 +20,7 @@
                 <th>Kode Pegawai</th>
                 <th>Nama</th>
                 <th>Lokasi</th>
+                <th>Mode</th>
                 <th>Jam Masuk</th>
                 <th>Status Masuk</th>
                 <th>Jam Pulang</th>
@@ -35,6 +36,7 @@
                 <td><?= $row->kode_pegawai; ?></td>
                 <td><?= $row->nama_lengkap; ?></td>
                 <td><?= $row->nama_lokasi; ?></td>
+                <td><?= $row->jam_masuk ? strtoupper($row->mode_absen) : '-'; ?></td>
                 <td><?= $row->jam_masuk ? date('H:i', strtotime($row->jam_masuk)) : ''; ?></td>
                 <td><?= $row->status_masuk; ?></td>
                 <td><?= $row->jam_pulang ? date('H:i', strtotime($row->jam_pulang)) : ''; ?></td>

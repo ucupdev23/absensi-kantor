@@ -42,12 +42,47 @@ class Leave_model extends CI_Model
     }
 
     /**
-     * Hitung pengajuan yang statusnya pending
+     * Hitung pengajuan yang statusnya pending (menunggu)
      */
     public function count_pending()
     {
         return $this->db
-            ->where('status', 'pending')
+            ->where('status', 'menunggu')
             ->count_all_results($this->table);
+    }
+
+    public function get_used_leave_days($employee_id, $year)
+    {
+        $leaves = $this->db->select('tanggal_mulai, tanggal_selesai, jumlah_hari')
+            ->from($this->table)
+            ->where('employee_id', $employee_id)
+            ->where('jenis', 'cuti')
+            ->where('status', 'disetujui')
+            ->group_start()
+                ->where('YEAR(tanggal_mulai)', $year)
+                ->or_where('YEAR(tanggal_selesai)', $year)
+            ->group_end()
+            ->get()
+            ->result();
+
+        $total_days = 0;
+        foreach ($leaves as $l) {
+            $start = new DateTime($l->tanggal_mulai);
+            $end = new DateTime($l->tanggal_selesai);
+            for ($d = clone $start; $d <= $end; $d->modify('+1 day')) {
+                if ($d->format('Y') == $year && $d->format('N') != 7) {
+                    $total_days++;
+                }
+            }
+        }
+        return $total_days;
+    }
+
+    public function get_remaining_leave_quota($employee_id, $year)
+    {
+        $employee = $this->db->select('jatah_cuti')->get_where('employees', ['id' => $employee_id])->row();
+        $jatah_cuti = $employee ? (int)$employee->jatah_cuti : 12;
+        $used = $this->get_used_leave_days($employee_id, $year);
+        return $jatah_cuti - $used;
     }
 }

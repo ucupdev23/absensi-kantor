@@ -25,6 +25,7 @@
                         <th>Jabatan</th>
                         <th>Lokasi</th>
                         <th>Shift</th>
+                        <th>Jatah Cuti</th>
                         <th>Status</th>
                         <th style="width:150px;" class="text-end">Aksi</th>
                     </tr>
@@ -39,6 +40,7 @@
                             <td><?= htmlspecialchars($p->nama_jabatan); ?></td>
                             <td><?= htmlspecialchars($p->nama_lokasi); ?></td>
                             <td><?= htmlspecialchars($p->nama_shift); ?></td>
+                            <td><?= htmlspecialchars($p->jatah_cuti); ?> Hari</td>
                             <td>
                                 <span class="badge <?= $p->status == 'aktif' ? 'bg-success' : 'bg-secondary'; ?>">
                                     <?= $p->status; ?>

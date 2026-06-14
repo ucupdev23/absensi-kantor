@@ -31,6 +31,11 @@ class Attendance_model extends CI_Model
         $end = new DateTime($tanggal_selesai);
 
         for ($d = $start; $d <= $end; $d->modify('+1 day')) {
+            // Lewati hari Minggu (Minggu = 7 dalam format 'N')
+            if ($d->format('N') == 7) {
+                continue;
+            }
+
             $tgl = $d->format('Y-m-d');
 
             $row = $this->get_today($employee_id, $tgl);

@@ -124,6 +124,7 @@
                     <li><a class="dropdown-item" href="<?= base_url('shift'); ?>">Shift</a></li>
                     <li><a class="dropdown-item" href="<?= base_url('pegawai'); ?>">Pegawai</a></li>
                     <li><a class="dropdown-item" href="<?= base_url('penugasan_lapangan'); ?>">Penugasan Lapangan</a></li>
+                    <li><a class="dropdown-item" href="<?= base_url('penugasan_wfh'); ?>">Penugasan WFH</a></li>
                 </ul>
             </li>
             <li class="nav-item">

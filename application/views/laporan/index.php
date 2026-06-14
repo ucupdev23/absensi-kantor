@@ -75,44 +75,76 @@ endforeach; ?>
 
 <!-- SUMMARY STAT CARDS -->
 <div class="row g-3 mb-3">
+    <!-- Total Record -->
     <div class="col-6 col-md-3">
         <div class="card border-0 shadow-sm" style="border-left:4px solid #670F7A !important;">
             <div class="card-body py-3">
-                <div class="text-muted small">Total Record Absensi</div>
-                <div class="h4 mb-0 fw-bold" style="color:#670F7A;"><?= $summary['total_records']; ?></div>
-                <div class="text-muted small">hari kerja tercatat</div>
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width:42px;height:42px;background:rgba(103,15,122,0.1);">
+                        <span style="font-size:1.2rem;">📊</span>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Total Record</div>
+                        <div class="h4 mb-0 fw-bold" style="color:#670F7A;"><?= $summary['total_records']; ?></div>
+                        <small class="text-muted" style="font-size:0.75rem;">hari kerja tercatat</small>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    <!-- Tingkat Kehadiran -->
     <div class="col-6 col-md-3">
         <div class="card border-0 shadow-sm" style="border-left:4px solid #198754 !important;">
             <div class="card-body py-3">
-                <div class="text-muted small">Tingkat Kehadiran</div>
-                <div class="h4 mb-0 fw-bold text-success"><?= $summary['persen_kehadiran']; ?>%</div>
-                <div class="text-muted small"><?= $summary['total_hadir']; ?> dari <?= $summary['total_records']; ?> hari</div>
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width:42px;height:42px;background:rgba(25,135,84,0.1);">
+                        <span style="font-size:1.2rem;">✅</span>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Kehadiran</div>
+                        <div class="h4 mb-0 fw-bold text-success"><?= $summary['persen_kehadiran']; ?>%</div>
+                        <small class="text-muted" style="font-size:0.75rem;"><?= $summary['total_hadir']; ?> / <?= $summary['total_records']; ?> hari</small>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    <!-- Total Keterlambatan -->
     <div class="col-6 col-md-3">
         <div class="card border-0 shadow-sm" style="border-left:4px solid #fd7e14 !important;">
             <div class="card-body py-3">
-                <div class="text-muted small">Total Keterlambatan</div>
-                <div class="h4 mb-0 fw-bold" style="color:#fd7e14;"><?= $summary['total_telat']; ?>x</div>
-                <div class="text-muted small"><?= number_format($summary['total_menit_telat']); ?> menit total</div>
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width:42px;height:42px;background:rgba(253,126,20,0.1);">
+                        <span style="font-size:1.2rem;">⏰</span>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Keterlambatan</div>
+                        <div class="h4 mb-0 fw-bold" style="color:#fd7e14;"><?= $summary['total_telat']; ?>x</div>
+                        <small class="text-muted" style="font-size:0.75rem;"><?= number_format($summary['total_menit_telat']); ?> m total</small>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    <!-- Izin / Cuti / Sakit -->
     <div class="col-6 col-md-3">
         <div class="card border-0 shadow-sm" style="border-left:4px solid #0d6efd !important;">
             <div class="card-body py-3">
-                <div class="text-muted small">Izin / Cuti / Sakit / Dll</div>
-                <div class="h4 mb-0 fw-bold text-primary"><?= $summary['total_izin'] + $summary['total_cuti'] + $summary['total_sakit'] + $summary['total_ganti_hari'] + $summary['total_potong_gaji']; ?></div>
-                <div class="text-muted small">
-                    📋 <?= $summary['total_izin']; ?>
-                    &nbsp;🏖️ <?= $summary['total_cuti']; ?>
-                    &nbsp;🏥 <?= $summary['total_sakit']; ?>
-                    &nbsp;🔄 <?= $summary['total_ganti_hari']; ?>
-                    &nbsp;📉 <?= $summary['total_potong_gaji']; ?>
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width:42px;height:42px;background:rgba(13,110,253,0.1);">
+                        <span style="font-size:1.2rem;">🏖️</span>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Cuti / Izin / Sakit / Dll</div>
+                        <div class="h4 mb-0 fw-bold text-primary"><?= $summary['total_izin'] + $summary['total_cuti'] + $summary['total_sakit'] + $summary['total_ganti_hari'] + $summary['total_potong_gaji']; ?></div>
+                        <small class="text-muted" style="font-size:0.7rem; white-space: nowrap;">
+                            📋<?= $summary['total_izin']; ?>
+                            🏖️<?= $summary['total_cuti']; ?>
+                            🏥<?= $summary['total_sakit']; ?>
+                            🔄<?= $summary['total_ganti_hari']; ?>
+                            📉<?= $summary['total_potong_gaji']; ?>
+                        </small>
+                    </div>
                 </div>
             </div>
         </div>
@@ -137,9 +169,9 @@ endforeach; ?>
                 <h6 class="mb-3" style="color:#670F7A;">📋 Rincian Status</h6>
                 <table class="table table-sm mb-0">
                     <tr>
-                        <td><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#198754;"></span> Hadir</td>
-                        <td class="fw-bold text-end"><?= $summary['total_hadir']; ?></td>
-                        <td class="text-end text-muted"><?= $summary['total_records'] > 0 ? round($summary['total_hadir'] / $summary['total_records'] * 100, 1) : 0; ?>%</td>
+                        <td><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#198754;"></span> Hadir (Tepat Waktu)</td>
+                        <td class="fw-bold text-end"><?= $summary['total_hadir'] - $summary['total_telat']; ?></td>
+                        <td class="text-end text-muted"><?= $summary['total_records'] > 0 ? round(($summary['total_hadir'] - $summary['total_telat']) / $summary['total_records'] * 100, 1) : 0; ?>%</td>
                     </tr>
                     <tr>
                         <td><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#fd7e14;"></span> Telat</td>
@@ -347,6 +379,7 @@ endif; ?>
                         <th>Hari</th>
                         <th>Pegawai</th>
                         <th>Lokasi</th>
+                        <th>Mode</th>
                         <th>Masuk</th>
                         <th>Pulang</th>
                         <th>Status Harian</th>
@@ -364,6 +397,19 @@ endif; ?>
                             <small class="text-muted"><?= htmlspecialchars($row->kode_pegawai); ?></small>
                         </td>
                         <td><?= htmlspecialchars($row->nama_lokasi); ?></td>
+                        <td>
+                            <?php if ($row->jam_masuk): ?>
+                                <?php if ($row->mode_absen == 'wfh'): ?>
+                                    <span class="badge bg-primary">WFH</span>
+                                <?php elseif ($row->mode_absen == 'lapangan'): ?>
+                                    <span class="badge bg-warning text-dark" title="<?= htmlspecialchars($row->tugas_lokasi_nama); ?>">Lapangan</span>
+                                <?php else: ?>
+                                    <span class="badge bg-secondary">Kantor</span>
+                                <?php endif; ?>
+                            <?php else: ?>
+                                <span class="text-muted">-</span>
+                            <?php endif; ?>
+                        </td>
                         <td>
                             <?php if ($row->jam_masuk): ?>
                                 <?= date('H:i', strtotime($row->jam_masuk)); ?>

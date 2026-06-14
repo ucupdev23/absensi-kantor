@@ -28,12 +28,13 @@ class Excel_lib {
         $sheet->setCellValue('B3', 'Kode Pegawai');
         $sheet->setCellValue('C3', 'Nama');
         $sheet->setCellValue('D3', 'Lokasi');
-        $sheet->setCellValue('E3', 'Jam Masuk');
-        $sheet->setCellValue('F3', 'Status Masuk');
-        $sheet->setCellValue('G3', 'Jam Pulang');
-        $sheet->setCellValue('H3', 'Status Pulang');
-        $sheet->setCellValue('I3', 'Status Harian');
-        $sheet->setCellValue('J3', 'Total Jam');
+        $sheet->setCellValue('E3', 'Mode');
+        $sheet->setCellValue('F3', 'Jam Masuk');
+        $sheet->setCellValue('G3', 'Status Masuk');
+        $sheet->setCellValue('H3', 'Jam Pulang');
+        $sheet->setCellValue('I3', 'Status Pulang');
+        $sheet->setCellValue('J3', 'Status Harian');
+        $sheet->setCellValue('K3', 'Total Jam');
 
         // Isi data mulai baris 4
         $rowNum = 4;
@@ -42,17 +43,18 @@ class Excel_lib {
             $sheet->setCellValue('B'.$rowNum, $row->kode_pegawai);
             $sheet->setCellValue('C'.$rowNum, $row->nama_lengkap);
             $sheet->setCellValue('D'.$rowNum, $row->nama_lokasi);
-            $sheet->setCellValue('E'.$rowNum, $row->jam_masuk ? date('H:i', strtotime($row->jam_masuk)) : '');
-            $sheet->setCellValue('F'.$rowNum, $row->status_masuk);
-            $sheet->setCellValue('G'.$rowNum, $row->jam_pulang ? date('H:i', strtotime($row->jam_pulang)) : '');
-            $sheet->setCellValue('H'.$rowNum, $row->status_pulang);
-            $sheet->setCellValue('I'.$rowNum, $row->status_harian);
-            $sheet->setCellValue('J'.$rowNum, $row->total_jam_kerja);
+            $sheet->setCellValue('E'.$rowNum, $row->jam_masuk ? strtoupper($row->mode_absen) : '-');
+            $sheet->setCellValue('F'.$rowNum, $row->jam_masuk ? date('H:i', strtotime($row->jam_masuk)) : '');
+            $sheet->setCellValue('G'.$rowNum, $row->status_masuk);
+            $sheet->setCellValue('H'.$rowNum, $row->jam_pulang ? date('H:i', strtotime($row->jam_pulang)) : '');
+            $sheet->setCellValue('I'.$rowNum, $row->status_pulang);
+            $sheet->setCellValue('J'.$rowNum, $row->status_harian);
+            $sheet->setCellValue('K'.$rowNum, $row->total_jam_kerja);
             $rowNum++;
         }
 
         // Biar kolom auto lebar
-        foreach (range('A','J') as $col) {
+        foreach (range('A','K') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 

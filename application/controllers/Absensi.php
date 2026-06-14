@@ -26,8 +26,11 @@ class Absensi extends CI_Controller {
         $today        = date('Y-m-d');
         $absen_hari   = $this->Attendance_model->get_today($pegawai->id, $today);
         $penugasan = $this->Field_assignment_model->get_active_for_employee($pegawai->id, $today, date('H:i:s'));
-$data['penugasan'] = $penugasan;
+        $data['penugasan'] = $penugasan;
 
+        $this->load->model('Wfh_model');
+        $wfh = $this->Wfh_model->get_active_wfh_for_employee($pegawai->id, $today);
+        $data['wfh'] = $wfh;
 
         $data['title']      = 'Absensi Hari Ini';
         $data['pegawai']    = $pegawai;
@@ -57,8 +60,24 @@ $data['penugasan'] = $penugasan;
             return redirect('absensi');
         }
 
-        // cek sudah pernah absen masuk
+        // cek status harian (cuti/izin/sakit)
         $absen = $this->Attendance_model->get_today($pegawai->id, $today);
+        if ($absen && in_array($absen->status_harian, ['Cuti', 'Izin', 'Sakit', 'Ganti_hari', 'Potong_gaji'])) {
+            $this->session->set_flashdata('error', 'Hari ini Anda tercatat sedang ' . $absen->status_harian . '. Absensi ditolak.');
+            return redirect('absensi');
+        }
+
+        // cek jika hari Minggu (libur) dan tidak ada penugasan lapangan/WFH aktif
+        $is_sunday = (date('N', strtotime($today)) == 7);
+        $penugasan = $this->Field_assignment_model->get_active_for_employee($pegawai->id, $today, date('H:i:s'));
+        $this->load->model('Wfh_model');
+        $wfh = $this->Wfh_model->get_active_wfh_for_employee($pegawai->id, $today);
+        if ($is_sunday && !$penugasan && !$wfh) {
+            $this->session->set_flashdata('error', 'Hari ini (Minggu) adalah hari libur mingguan. Absensi ditolak.');
+            return redirect('absensi');
+        }
+
+        // cek sudah pernah absen masuk
         if ($absen && $absen->jam_masuk) {
             $this->session->set_flashdata('error', 'Anda sudah absen masuk hari ini.');
             return redirect('absensi');
@@ -140,6 +159,22 @@ $assignment_id = $check['assignment_id'];
         }
 
         $absen = $this->Attendance_model->get_today($pegawai->id, $today);
+        // cek status harian (cuti/izin/sakit)
+        if ($absen && in_array($absen->status_harian, ['Cuti', 'Izin', 'Sakit', 'Ganti_hari', 'Potong_gaji'])) {
+            $this->session->set_flashdata('error', 'Hari ini Anda tercatat sedang ' . $absen->status_harian . '. Absensi ditolak.');
+            return redirect('absensi');
+        }
+
+        // cek jika hari Minggu (libur) dan tidak ada penugasan lapangan/WFH aktif
+        $is_sunday = (date('N', strtotime($today)) == 7);
+        $penugasan = $this->Field_assignment_model->get_active_for_employee($pegawai->id, $today, date('H:i:s'));
+        $this->load->model('Wfh_model');
+        $wfh = $this->Wfh_model->get_active_wfh_for_employee($pegawai->id, $today);
+        if ($is_sunday && !$penugasan && !$wfh) {
+            $this->session->set_flashdata('error', 'Hari ini (Minggu) adalah hari libur mingguan. Absensi ditolak.');
+            return redirect('absensi');
+        }
+
         if (!$absen || !$absen->jam_masuk) {
             $this->session->set_flashdata('error', 'Anda belum absen masuk hari ini.');
             return redirect('absensi');
@@ -466,6 +501,19 @@ private function resize_gd_image($src, $max_w = 900, $max_h = 900)
 
 private function resolve_mode_absen($pegawai, $lat, $lng)
 {
+    // 0) cek penugasan WFH
+    $today = date('Y-m-d');
+    $this->load->model('Wfh_model');
+    $wfh = $this->Wfh_model->get_active_wfh_for_employee($pegawai->id, $today);
+    if ($wfh) {
+        return [
+            'allowed' => true,
+            'mode' => 'wfh',
+            'assignment_id' => null,
+            'message' => null
+        ];
+    }
+
     // 1) cek kantor
     $dist_kantor = $this->distance_in_meters(
         $pegawai->latitude, $pegawai->longitude,

@@ -350,6 +350,7 @@ endif; ?>
                     <a href="<?= base_url('lokasi'); ?>" class="btn btn-outline-secondary btn-sm">📍 Master Lokasi</a>
                     <a href="<?= base_url('penugasan_lapangan'); ?>" class="btn btn-outline-secondary btn-sm">🗺️ Penugasan Lapangan</a>
                     <a href="<?= base_url('penugasan_lapangan/history'); ?>" class="btn btn-outline-secondary btn-sm">📜 Riwayat Penugasan</a>
+                    <a href="<?= base_url('penugasan_wfh'); ?>" class="btn btn-outline-secondary btn-sm">🏠 Penugasan WFH</a>
                 </div>
             </div>
         </div>

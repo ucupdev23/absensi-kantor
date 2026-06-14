@@ -21,9 +21,15 @@ class Pengajuan extends CI_Controller {
 
         $pengajuan = $this->Leave_model->get_by_employee($pegawai->id);
 
-        $data['title']     = 'Pengajuan Cuti / Izin / Sakit';
-        $data['pegawai']   = $pegawai;
-        $data['pengajuan'] = $pengajuan;
+        $tahun_ini = date('Y');
+        $cuti_terpakai = $this->Leave_model->get_used_leave_days($pegawai->id, $tahun_ini);
+        $sisa_cuti = (int)$pegawai->jatah_cuti - $cuti_terpakai;
+
+        $data['title']         = 'Pengajuan Cuti / Izin / Sakit';
+        $data['pegawai']       = $pegawai;
+        $data['pengajuan']     = $pengajuan;
+        $data['cuti_terpakai'] = $cuti_terpakai;
+        $data['sisa_cuti']     = $sisa_cuti;
 
         $this->load->view('templates/header',$data);
         $this->load->view('pengajuan/index',$data);
@@ -32,7 +38,18 @@ class Pengajuan extends CI_Controller {
 
     public function create()
     {
-        $data['title'] = 'Buat Pengajuan';
+        $user_id = $this->session->userdata('user_id');
+        $pegawai = $this->Pegawai_model->get_by_user_id($user_id);
+        if (!$pegawai) show_error('Data pegawai tidak ditemukan.', 500);
+
+        $tahun_ini = date('Y');
+        $cuti_terpakai = $this->Leave_model->get_used_leave_days($pegawai->id, $tahun_ini);
+        $sisa_cuti = (int)$pegawai->jatah_cuti - $cuti_terpakai;
+
+        $data['title']     = 'Buat Pengajuan';
+        $data['pegawai']   = $pegawai;
+        $data['sisa_cuti'] = $sisa_cuti;
+
         $this->load->view('templates/header',$data);
         $this->load->view('pengajuan/form',$data);
         $this->load->view('templates/footer');
@@ -52,6 +69,41 @@ class Pengajuan extends CI_Controller {
         if ($tanggal_selesai < $tanggal_mulai) {
             $this->session->set_flashdata('error', 'Tanggal selesai tidak boleh lebih awal dari tanggal mulai.');
             return redirect('pengajuan/create');
+        }
+
+        // Hitung jumlah hari cuti/izin (kecuali hari Minggu)
+        $start = new DateTime($tanggal_mulai);
+        $end = new DateTime($tanggal_selesai);
+        $jumlah_hari = 0;
+        $requested_by_year = [];
+
+        for ($d = clone $start; $d <= $end; $d->modify('+1 day')) {
+            if ($d->format('N') != 7) {
+                $jumlah_hari++;
+                $yr = $d->format('Y');
+                if (!isset($requested_by_year[$yr])) {
+                    $requested_by_year[$yr] = 0;
+                }
+                $requested_by_year[$yr]++;
+            }
+        }
+
+        if ($jumlah_hari == 0) {
+            $this->session->set_flashdata('error', 'Pengajuan tidak valid karena seluruh tanggal yang dipilih adalah hari Minggu (libur).');
+            return redirect('pengajuan/create');
+        }
+
+        // Validasi jatah cuti jika jenis pengajuan adalah 'cuti'
+        if ($jenis == 'cuti') {
+            foreach ($requested_by_year as $yr => $days) {
+                $used = $this->Leave_model->get_used_leave_days($pegawai->id, $yr);
+                $jatah_cuti = (int)$pegawai->jatah_cuti;
+                if ($used + $days > $jatah_cuti) {
+                    $remaining = $jatah_cuti - $used;
+                    $this->session->set_flashdata('error', "Jatah cuti tahunan Anda pada tahun {$yr} tidak mencukupi. Sisa jatah cuti: {$remaining} hari, sedangkan Anda mengajukan: {$days} hari.");
+                    return redirect('pengajuan/create');
+                }
+            }
         }
 
         // (opsional) upload lampiran
@@ -80,6 +132,7 @@ class Pengajuan extends CI_Controller {
             'jenis'          => $jenis,
             'tanggal_mulai'  => $tanggal_mulai,
             'tanggal_selesai'=> $tanggal_selesai,
+            'jumlah_hari'    => $jumlah_hari,
             'alasan'         => $alasan,
             'lampiran_file'  => $lampiran_file,
             'status'         => 'menunggu'

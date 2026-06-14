@@ -102,6 +102,10 @@ class Laporan extends CI_Controller {
     elseif ($status_harian == 'Ganti_hari') $rekap[$key]['ganti_hari']++;
     elseif ($status_harian == 'Potong_gaji') $rekap[$key]['potong_gaji']++;
 
+    if ($row->status_masuk == 'Telat') {
+        $rekap[$key]['telat']++;
+    }
+
     // HITUNG TELAT MENIT
     $menit_telat = 0;
     if ($row->jam_masuk && $row->shift_jam_masuk) {

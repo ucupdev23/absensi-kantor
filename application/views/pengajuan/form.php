@@ -15,7 +15,7 @@
                         <label class="form-label">Jenis Pengajuan</label>
                         <select name="jenis" class="form-select" required>
                             <option value="">- Pilih -</option>
-                            <option value="cuti">Cuti</option>
+                            <option value="cuti">Cuti (Sisa Jatah Cuti: <?= $sisa_cuti; ?> Hari)</option>
                             <option value="ganti_hari">Ganti Hari</option>
                             <option value="potong_gaji">Potong Gaji</option>
                             <option value="sakit">Sakit</option>

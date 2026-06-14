@@ -57,6 +57,7 @@ class Pegawai extends CI_Controller {
             'shift_id'      => $this->input->post('shift_id',TRUE),
             'alamat'        => $this->input->post('alamat',TRUE),
             'status'        => $this->input->post('status_pegawai',TRUE),
+            'jatah_cuti'    => $this->input->post('jatah_cuti',TRUE) ?: 12,
         ];
 
         $this->Pegawai_model->insert_employee($user_data,$employee_data);
@@ -103,6 +104,7 @@ class Pegawai extends CI_Controller {
             'shift_id'      => $this->input->post('shift_id',TRUE),
             'alamat'        => $this->input->post('alamat',TRUE),
             'status'        => $this->input->post('status_pegawai',TRUE),
+            'jatah_cuti'    => $this->input->post('jatah_cuti',TRUE) ?: 12,
         ];
 
         $this->Pegawai_model->update_employee($id,$user_data,$employee_data);

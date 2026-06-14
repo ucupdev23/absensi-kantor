@@ -97,6 +97,13 @@ $route['penugasan_lapangan/delete/(:num)'] = 'penugasan_lapangan/delete/$1';
 
 $route['penugasan_lapangan/history'] = 'penugasan_lapangan/history';
 
+$route['penugasan_wfh'] = 'penugasan_wfh/index';
+$route['penugasan_wfh/create'] = 'penugasan_wfh/create';
+$route['penugasan_wfh/store'] = 'penugasan_wfh/store';
+$route['penugasan_wfh/edit/(:num)'] = 'penugasan_wfh/edit/$1';
+$route['penugasan_wfh/update/(:num)'] = 'penugasan_wfh/update/$1';
+$route['penugasan_wfh/delete/(:num)'] = 'penugasan_wfh/delete/$1';
+
 $route['forbidden'] = 'errors/forbidden';
 $route['errors/forbidden'] = 'errors/forbidden';
 

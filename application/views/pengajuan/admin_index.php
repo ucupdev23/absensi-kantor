@@ -38,12 +38,20 @@
                             <td>
                                 <?= htmlspecialchars($p->nama_lengkap); ?><br>
                                 <small class="text-muted"><?= htmlspecialchars($p->kode_pegawai); ?></small>
+                                <?php if ($p->jenis == 'cuti'): ?>
+                                    <br>
+                                    <small class="text-info fw-semibold">
+                                        Sisa Cuti: <?= $this->Leave_model->get_remaining_leave_quota($p->employee_id, date('Y', strtotime($p->tanggal_mulai))); ?> Hari
+                                    </small>
+                                <?php endif; ?>
                             </td>
                             <td><?= ucfirst($p->jenis); ?></td>
                             <td>
                                 <?= date('d M Y', strtotime($p->tanggal_mulai)); ?>
                                 -
                                 <?= date('d M Y', strtotime($p->tanggal_selesai)); ?>
+                                <br>
+                                <span class="badge bg-secondary"><?= $p->jumlah_hari; ?> Hari</span>
                             </td>
                             <td><?= nl2br(htmlspecialchars($p->alasan)); ?></td>
                             <td>

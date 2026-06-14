@@ -2,6 +2,9 @@
 $status_harian = $absen_hari ? $absen_hari->status_harian : null;
 $is_libur_pribadi = in_array($status_harian, ['Cuti', 'Izin', 'Sakit', 'Ganti_hari', 'Potong_gaji']);
 
+$is_sunday = (date('N', strtotime($today)) == 7);
+$is_libur_mingguan = ($is_sunday && empty($penugasan) && empty($wfh));
+
 $jam_masuk = $absen_hari ? $absen_hari->jam_masuk : null;
 $jam_pulang = $absen_hari ? $absen_hari->jam_pulang : null;
 ?>
@@ -292,8 +295,21 @@ endif; ?>
               <span>Hari ini tercatat sebagai <strong><?= $status_harian; ?></strong>, Anda tidak perlu absen.</span>
             </div>
           </div>
-        <?php
-endif; ?>
+        <?php elseif (!empty($wfh)): ?>
+          <div class="alert-modern mt-3" style="background: #dbeafe; border-left: 4px solid #3b82f6; color: #1e3a8a;">
+            <div class="d-flex align-items-center gap-2">
+              <span>🏠</span>
+              <span>Hari ini Anda ditugaskan <strong>WFH (Work From Home)</strong>.</span>
+            </div>
+          </div>
+        <?php elseif ($is_libur_mingguan): ?>
+          <div class="alert-modern mt-3" style="background: #fef9c3; border-left-color: var(--warning);">
+            <div class="d-flex align-items-center gap-2">
+              <span>🏢</span>
+              <span>Hari ini (Minggu) adalah hari libur mingguan, Anda tidak perlu melakukan absensi.</span>
+            </div>
+          </div>
+        <?php endif; ?>
       </div>
     </div>
 
@@ -311,8 +327,16 @@ endif; ?>
           </div>
         </div>
 
-        <!-- Penugasan Info -->
-        <?php if (!empty($penugasan)): ?>
+        <!-- Penugasan Info / WFH -->
+        <?php if (!empty($wfh)): ?>
+          <div class="alert-modern mb-4" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-left: 4px solid #3b82f6; color: #1e3a8a;">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <span>🏠</span>
+              <span class="fw-semibold">Mode WFH (Work From Home) Aktif</span>
+            </div>
+            <p class="mb-0">Anda ditugaskan WFH hari ini. Anda dapat melakukan absensi dari mana saja (radius koordinat kantor dibypass), foto selfie dan GPS tetap dicatat.</p>
+          </div>
+        <?php elseif (!empty($penugasan)): ?>
           <div class="alert-modern alert-lapangan mb-4">
             <div class="d-flex align-items-center gap-2 mb-2">
               <span>📍</span>
@@ -327,16 +351,14 @@ endif; ?>
               <span>Buka Google Maps</span>
             </a>
           </div>
-        <?php
-else: ?>
+        <?php else: ?>
           <div class="alert-modern alert-kantor mb-4">
             <div class="d-flex align-items-center gap-2">
               <span>🏢</span>
               <span>Tidak ada penugasan lapangan aktif. Absensi wajib di kantor.</span>
             </div>
           </div>
-        <?php
-endif; ?>
+        <?php endif; ?>
 
         <!-- Camera Check Button -->
         <button type="button" class="btn-outline-modern w-100 mb-3" onclick="cekPerangkat()">
@@ -365,7 +387,7 @@ endif; ?>
           <button type="button"
                   class="btn-modern"
                   onclick="handleAbsen('masuk')"
-                  <?=($jam_masuk || $is_libur_pribadi) ? 'disabled' : ''; ?>>
+                  <?=($jam_masuk || $is_libur_pribadi || $is_libur_mingguan) ? 'disabled' : ''; ?>>
             <div class="d-flex align-items-center justify-content-center gap-2">
               <span>📷</span>
               <span><?= $jam_masuk ? 'Sudah Absen Masuk' : 'Absen Masuk'; ?></span>
@@ -375,7 +397,7 @@ endif; ?>
           <button type="button"
                   class="btn-modern"
                   onclick="handleAbsen('pulang')"
-                  <?=(!$jam_masuk || $jam_pulang || $is_libur_pribadi) ? 'disabled' : ''; ?>>
+                  <?=(!$jam_masuk || $jam_pulang || $is_libur_pribadi || $is_libur_mingguan) ? 'disabled' : ''; ?>>
             <div class="d-flex align-items-center justify-content-center gap-2">
               <span>👋</span>
               <span>

@@ -69,6 +69,14 @@
                         </div>
                     </div>
 
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Jatah Cuti Tahunan (Hari)</label>
+                            <input type="number" name="jatah_cuti" class="form-control" required min="0"
+                                   value="<?= $row ? htmlspecialchars($row->jatah_cuti) : '12'; ?>">
+                        </div>
+                    </div>
+
                     <hr>
 
                     <h6 class="mb-2" style="color:#670F7A;">Akun Login Pegawai</h6>
